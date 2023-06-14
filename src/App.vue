@@ -6,6 +6,8 @@
     <RouterView />
 </template>
 
-<style scoped>
-
+<style>
+html{
+    background-color: #443988;
+}
 </style>

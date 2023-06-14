@@ -25,6 +25,11 @@ const router = createRouter({
             path: '/sign-up',
             name: 'signUp',
             component: ()=>import('../Security/Pages/sign-up.component.vue'),
+        },
+        {
+            path: '/calculator',
+            name: 'calculator',
+            component: ()=>import('../Calculator/pages/inputData.component.vue'),
         }
         ,/*
         {

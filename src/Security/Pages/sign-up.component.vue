@@ -4,27 +4,27 @@
             <img src="src/assets/images/hogar-logo.png" alt="Company Logo">
         </div>
 
-        <pv-card class="signUpCard">
+        <Card class="signUpCard">
             <template #content>
                 <div class="p-fluid">
                     <div v-focustrap class="card">
                         <div class="field">
-                            <pv-inputText id="input" v-model="name" type="text" placeholder="Nombre" autofocus />
+                            <InputText id="input" v-model="name" type="text" placeholder="Nombre" autofocus />
                         </div>
                         <div class="field">
                             <div class="p-input-icon-right">
                                 <i class="pi pi-envelope" />
-                                <pv-inputText id="email" v-model="email" type="email" placeholder="Email" />
+                                <InputText id="email" v-model="email" type="email" placeholder="Email" />
                             </div>
                         </div>
                         <div class="field">
                             <div class="p-float-label">
-                                <pv-password v-model="password">
+                                <Password v-model="password">
                                     <template #header>
                                         <h6>Crea una contraseña</h6>
                                     </template>
                                     <template #footer>
-                                        <pv-divider />
+                                        <Divider />
                                         <p class="mt-2">Sugerencias</p>
                                         <ul class="pl-2 ml-2 mt-0" style="line-height: 1.5">
                                             <li>Por lo menos una minúscula</li>
@@ -33,23 +33,23 @@
                                             <li>Mínimo 8 caracteres</li>
                                         </ul>
                                     </template>
-                                </pv-password>
+                                </Password>
                                 <label for="password">Contraseña</label>
                             </div>
                         </div>
                         <div class="field-checkbox">
-                            <pv-checkbox id="accept" v-model="accept" name="accept" value="Accept" />
+                            <Checkbox id="accept" v-model="accept" name="accept" value="Accept" />
                             <label for="accept">Estoy de acuerdo con los términos y condiciones*</label>
                         </div>
                         <router-link to="/home">
-                            <pv-button type="submit" label="Regístrate" class="mt-2" />
+                            <Button type="submit" label="Regístrate" class="mt-2" />
                         </router-link>
 
                     </div>
                 </div>
             </template>
 
-        </pv-card>
+        </Card>
 
     </div>
 </template>
