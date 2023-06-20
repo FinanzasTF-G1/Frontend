@@ -28,6 +28,8 @@ import Checkbox from "primevue/checkbox";
 import CascadeSelect from 'primevue/cascadeselect';
 import Dropdown from 'primevue/dropdown';
 import Calendar from 'primevue/calendar';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
 
 const app = createApp(App)
 app.use(createPinia())
@@ -51,4 +53,6 @@ app.directive('focustrap', FocusTrap);
 app.component('CascadeSelect', CascadeSelect);
 app.component('Dropdown', Dropdown);
 app.component('Calendar', Calendar);
+app.component('DataTable', DataTable);
+app.component('Column', Column);
 app.mount('#app')
