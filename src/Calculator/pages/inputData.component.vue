@@ -296,6 +296,8 @@ var periodoGracia = ref(null);
 var tasaInflacion = 0;
 var inflacionPeriodo = ref(null);
 
+var commit=null;
+
 var sumaCostesGastosIniciales = costesNotariales + costesRegistrales + tasacion + comisionDeEstudio + comisionActivacion;
 
 
