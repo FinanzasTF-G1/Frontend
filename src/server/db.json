@@ -1,8 +1,22 @@
 {
-  "user": [
+  "operacion": [
     {
-      "id": 1,
-      "name": "Jess"
+      "numCuota": 0,
+      "TEA": 0,
+      "TEP": 0,
+      "Flujo": 100.0
+    },
+    {
+      "numCuota": 1,
+      "TEA": 0.1,
+      "TEP": 2,
+      "Flujo": 101.0
+    }
+  ,{
+      "numCuota": 2,
+      "TEA": 0.2,
+      "TEP": 3,
+      "Flujo": 102.0
     }
   ]
 }

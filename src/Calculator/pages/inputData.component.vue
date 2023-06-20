@@ -64,15 +64,6 @@
           <InputNumber v-model="nTotalDeCuotas" :min="0" :minFractionDigits="0" :maxFractionDigits="2"
                        class="md: w-10rem"/>
         </div>
-        <!--        <div class="field">
-                  <label for="fechaPago" class="col-fixed" style="width:200px">Fecha de préstamo</label>
-                  <Calendar v-model="fechaPago" dateFormat="dd/mm/yy"/>
-                </div>
-                <div class="field">
-                  <label for="periodoGracia" class="col-fixed" style="width:200px">Periodo de gracia</label>
-                  <InputNumber v-model="periodoGracia" :min="0" inputId="integeronly"/>
-                  <label class="col-fixed">días</label>
-                </div>-->
       </div>
     </div>
     <div class="card col-5">
@@ -202,7 +193,6 @@
         </div>
       </div>
     </div>
-
     <div class="card col-5">
       <h4>Datos del costo de oportunidad</h4>
       <div class="field">
@@ -246,18 +236,26 @@
       </div>
     </div>
   </div>
-  <div>
-    <Button></Button>
-  </div>
   <div class="card">
-    Usaré esto para la tabla :T
+      <DataTable :value="operacion" tableStyle="min-width: 50rem">
+          <Column field="numCuota" header="NumCuota"></Column>
+          <Column field="TEA" header="TEA"></Column>
+          <Column field="TEP" header="TEP"></Column>
+          <Column field="Flujo" header="Flujo"></Column>
+      </DataTable>
   </div>
 
 </template>
 
 <script setup>
-import {ref} from "vue";
+import {ref, onMounted} from "vue";
+import {calculatorApiService} from "@/Calculator/services/calculator-api.service";
 
+onMounted(() => {
+    calculatorApiService.getOperations().then((data) => (operacion.value = data.slice(0, 10)))
+});
+
+const operacion = ref();
 var precioVenta = ref();
 var cuotaInicial = ref(null);
 const nAnios = ref(null);
