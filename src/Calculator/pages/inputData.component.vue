@@ -36,12 +36,12 @@
         </div>
       </div>
     </div>
-    <div class="card col-5">
+    <div class="card col-5" @click="calcularOnBu">
       <h4>Resultado del financiamiento</h4>
       <div class="formgroup-inline">
         <div class="field">
           <label for="saldoAfinanciar" class="col-fixed" style="width:200px">Saldo a financiar</label>
-          <InputNumber v-model="saldoAfinanciar" :min="0" :minFractionDigits="0" :maxFractionDigits="2"/>
+          <label>{{saldoAfinanciar}}</label>
         </div>
       </div>
       <div class="formgroup-inline">
@@ -261,7 +261,11 @@ var cuotaInicial = ref(null);
 const nAnios = ref(null);
 const frec = ref(null);
 const diasPorAnio = ref(null);
-var saldoAfinanciar = precioVenta - cuotaInicial * precioVenta;
+
+const saldoAfinanciar = ref(0);
+const calcularOnBu = ()=>{
+    saldoAfinanciar.value = precioVenta.value - (cuotaInicial.value)/100 * precioVenta.value;
+}
 var montoDelPrestamo = ref(null);
 var nCuotasPorAnio = ref(null);
 var nTotalDeCuotas = ref(null);
@@ -292,11 +296,9 @@ var cuotaActual = 0;
 var TEA = ref(null);
 var saldoFinal = ref(null);
 var periodoGracia = ref(null);
-
 var tasaInflacion = 0;
 var inflacionPeriodo = ref(null);
 
-var commit=null;
 
 var sumaCostesGastosIniciales = costesNotariales + costesRegistrales + tasacion + comisionDeEstudio + comisionActivacion;
 
