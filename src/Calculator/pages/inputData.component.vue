@@ -19,8 +19,8 @@
       </div>
       <div class="formgroup-inline">
         <div class="field">
-          <label for="NA" class="col-fixed" style="width:200px">N° de Años</label>
-          <InputNumber v-model="NA" :min="0" :minFractionDigits="0" :maxFractionDigits="2"/>
+          <label for="nAnios" class="col-fixed" style="width:200px">N° de Años</label>
+          <InputNumber v-model="nAnios" :min="0" :minFractionDigits="0" :maxFractionDigits="2"/>
         </div>
       </div>
       <div class="formgroup-inline">
@@ -98,15 +98,6 @@
           <label for="comisionActivacion" class="col-fixed" style="width:200px">Comisión activación</label>
           <InputNumber v-model="comisionActivacion" :min="0" :minFractionDigits="0" :maxFractionDigits="2"/>
         </div>
-        <div class="field">
-          <label for=diasPAnio class="col-fixed" style="width:200px">Días por año</label>
-          <InputNumber v-model="diasPAnio" :min="0" inputId="integeronly"/>
-        </div>
-        <div class="field">
-          <label for="tazaDescuento" class="col-fixed" style="width:200px">Tasa de descuento</label>
-          <InputNumber v-model="tazaDescuento" :min="0" :minFractionDigits="0" :maxFractionDigits="2"/>
-          <label class="col-fixed">% anual</label>
-        </div>
       </div>
     </div>
     <div class="card col-5">
@@ -123,8 +114,9 @@
       </div>
       <div class="formgroup-inline">
         <div class="field">
-          <label for="segRiesgo" class="col-fixed" style="width:150px">Seguro riesgo</label>
-          <InputNumber v-model="segRiesgo" :min="0" :minFractionDigits="0" :maxFractionDigits="2" class="md: w-10rem"/>
+          <label for="segRiesgoPer" class="col-fixed" style="width:150px">Seguro riesgo</label>
+          <InputNumber v-model="segRiesgoPer" :min="0" :minFractionDigits="0" :maxFractionDigits="2"
+                       class="md: w-10rem"/>
         </div>
       </div>
     </div>
@@ -254,6 +246,9 @@
       </div>
     </div>
   </div>
+  <div>
+    <Button></Button>
+  </div>
   <div class="card">
     Usaré esto para la tabla :T
   </div>
@@ -263,40 +258,112 @@
 <script setup>
 import {ref} from "vue";
 
-const precioVenta = ref(null);
-const valorTransaccion = ref(null);
-const cuotaInicial = ref(null);
-const nCuotas = ref(null);
-const intervaloSeleccionado = ref();
-const frecuenciaPago = ref();
-const fechaPago = ref();
-const periodoGracia = ref();
-const tazaEfAnual = ref();
-const diasPAnio = ref();
-const tazaDescuento = ref();
-const segDesgrabamen = ref();
-const intervSegDesg = ref();
-const segBien = ref();
-const intervSegBien = ref();
-const na = ref();
-const intervalos = ref([
-  {name: 'Días', code: 'D'},
-  {name: 'Meses', code: 'M'},
-  {name: 'Bimestres', code: 'B'},
-  {name: 'Semestres', code: 'S'},
-  {name: 'Años', code: 'A'}
-]);
-const frecuencias = ref([
-  {name: 'Mensual', cant: '30'},
-  {name: 'Semestral', cant: '180'},
-  {name: 'Anual', cant: '360'},
-]);
+var precioVenta = ref();
+var cuotaInicial = ref(null);
+const nAnios = ref(null);
+const frec = ref(null);
+const diasPorAnio = ref(null);
+var saldoAfinanciar = precioVenta - cuotaInicial * precioVenta;
+var montoDelPrestamo = ref(null);
+var nCuotasPorAnio = ref(null);
+var nTotalDeCuotas = ref(null);
+const costesNotariales = ref(null);
+const costesRegistrales = ref(null);
+const tasacion = ref(null);
+const comisionDeEstudio = ref(null);
+const comisionActivacion = ref(null);
+var segDesgravamenPer = ref(null);
+var segRiesgoPer = ref(null);
+const comisionPeriodica = ref(null);
+const portes = ref(null);
+const gastosAdministracion = ref(null);
+const porcentajeSeguroDesgravamen = ref(null);
+const porcentajeSeguroRiesgo = ref(null);
+const intereses = ref(null);
+const amortCapital = ref(null);
+const seguroDesgravamen = ref(null);
+const segContraTodoRiesgo = ref(null);
+const comisionesPeriodicas = ref(null);
+const portesGastosAdministracion = ref(null);
+const cok = ref(null);
+var tasaDeDescuento = ref(null);
+const tirDeLaOperacion = ref(null);
+var tceaDeLaOperacion = ref(null);
+const vanDeLaOperacion = ref(null);
+var cuotaActual = 0;
+var TEA = ref(null);
+var saldoFinal = ref(null);
+var periodoGracia = ref(null);
 
-const desembolso = ref([
-  {name: 'Agregar al préstamo', cant: ''}
-])
+var tasaInflacion = 0;
+var inflacionPeriodo = ref(null);
 
-console.log();
+var sumaCostesGastosIniciales = costesNotariales + costesRegistrales + tasacion + comisionDeEstudio + comisionActivacion;
+
+
+
+montoDelPrestamo = saldoAfinanciar + sumaCostesGastosIniciales;
+
+nCuotasPorAnio = diasPorAnio / frec;
+
+nTotalDeCuotas = nCuotasPorAnio / nAnios;
+
+segDesgravamenPer = porcentajeSeguroDesgravamen / (30 * frec);
+
+segRiesgoPer = porcentajeSeguroRiesgo * precioVenta / nCuotasPorAnio;
+
+tasaDeDescuento = Math.pow((1 + cok), (frec / diasPorAnio)) - 1;
+
+tceaDeLaOperacion = Math.pow((1 + tirDeLaOperacion), (diasPorAnio / frec)) - 1;
+
+function TEP() {
+  if (cuotaActual <= nTotalDeCuotas) {
+    return Math.pow((1 + TEA), (frec / diasPorAnio)) - 1;
+  } else {
+    return 0;
+  }
+}
+
+function saldoInicial() {
+  if (cuotaActual === 1) {
+    return montoDelPrestamo;
+  } else {
+    if (cuotaActual <= nTotalDeCuotas) {
+      return saldoFinal;
+    } else return 0;
+  }
+}
+
+function saldoInicialIndexado() {
+  return saldoInicial() + saldoInicial() * inflacionPeriodo;
+}
+
+function fIntereses() {
+  return saldoInicial() * TEP();
+}
+
+function Cuota() {
+  if (cuotaActual <= nTotalDeCuotas) {
+    if (periodoGracia === 'T') {
+      return 0;
+    } else {
+      if (periodoGracia === 'P') {
+        return fIntereses();
+      }
+    }
+  }
+}
+
+function SeguroDeDesgravamen() {
+  return saldoInicialIndexado() * porcentajeSeguroDesgravamen;
+}
+
+function SeguroRiesgo() {
+  if (cuotaActual <= nTotalDeCuotas) {
+    return -segRiesgoPer;
+  } else return 0;
+}
+
 
 </script>
 
