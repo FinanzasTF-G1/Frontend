@@ -1,5 +1,5 @@
 <template>
-  <div class="grid pt-2 text-center">
+  <div class="grid pt-2 text-center" @click="calcularOnBu">
     <div class="card col-11">
       <h2>Método Francés Vencido - Ordinario</h2>
     </div>
@@ -36,33 +36,30 @@
         </div>
       </div>
     </div>
-    <div class="card col-5" @click="calcularOnBu">
+    <div class="card col-5">
       <h4>Resultado del financiamiento</h4>
       <div class="formgroup-inline">
         <div class="field">
           <label for="saldoAfinanciar" class="col-fixed" style="width:200px">Saldo a financiar</label>
-          <label>{{saldoAfinanciar}}</label>
+          <label>{{ saldoAfinanciar }}</label>
         </div>
       </div>
       <div class="formgroup-inline">
         <div class="field">
           <label for="montoDelPrestamo" class="col-fixed" style="width:200px">Monto del préstamo</label>
-          <InputNumber v-model="montoDelPrestamo" :min="0" :minFractionDigits="0" :maxFractionDigits="2"
-                       class="md: w-10rem"/>
+          <label>{{ montoDelPrestamo }}</label>
         </div>
       </div>
       <div class="formgroup-inline">
         <div class="field">
           <label for="nCuotasPorAnio" class="col-fixed" style="width:200px">N° Cuotas por Año</label>
-          <InputNumber v-model="nCuotasPorAnio" :min="0" :minFractionDigits="0" :maxFractionDigits="2"
-                       class="md: w-10rem"/>
+          <label>{{ nCuotasPorAnio }}</label>
         </div>
       </div>
       <div class="formgroup-inline">
         <div class="field">
           <label for="nTotalDeCuotas" class="col-fixed" style="width:200px">N° Total de Cuotas</label>
-          <InputNumber v-model="nTotalDeCuotas" :min="0" :minFractionDigits="0" :maxFractionDigits="2"
-                       class="md: w-10rem"/>
+          <label>{{ nTotalDeCuotas }}</label>
         </div>
       </div>
     </div>
@@ -96,8 +93,7 @@
       <div class="formgroup-inline">
         <div class="field">
           <label for="segDesgravamenPer" class="col-fixed" style="width:150px">% Seguro de desgravamen per.</label>
-          <InputNumber v-model="segDesgravamenPer" :min="0" :minFractionDigits="0" :maxFractionDigits="2"
-                       class="md: w-10rem"/>
+          <label>{{ segDesgravamenPer }}</label>
           <label class="col-fixed">%</label>
           <!--          <Dropdown v-model="intervSegDesg" :options="intervalos" optionLabel="name"
                               placeholder="Selecciona un intervalo" class="w-full md:w-10rem"/>-->
@@ -106,8 +102,7 @@
       <div class="formgroup-inline">
         <div class="field">
           <label for="segRiesgoPer" class="col-fixed" style="width:150px">Seguro riesgo</label>
-          <InputNumber v-model="segRiesgoPer" :min="0" :minFractionDigits="0" :maxFractionDigits="2"
-                       class="md: w-10rem"/>
+          <label>{{ segRiesgoPer }}</label>
         </div>
       </div>
     </div>
@@ -135,14 +130,14 @@
         <div class="field">
           <label for="porcentajeSeguroDesgravamen" class="col-fixed" style="width:200px">% de Seguro de
             desgravamen</label>
-          <InputNumber v-model="porcentajeSeguroDesgravamen" :min="0" inputId="integeronly"/>
+          <InputNumber v-model="porcentajeSeguroDesgravamen" :min="0" :maxFractionDigits="5"/>
           <label class="col-fixed">%</label>
         </div>
       </div>
       <div class="formgroup-inline">
         <div class="field">
           <label for="porcentajeSeguroRiesgo" class="col-fixed" style="width:200px">% de Seguro de riesgo</label>
-          <InputNumber v-model="porcentajeSeguroRiesgo" :min="0" inputId="integeronly"/>
+          <InputNumber v-model="porcentajeSeguroRiesgo" :min="0" :maxFractionDigits="5"/>
           <label class="col-fixed">%</label>
         </div>
       </div>
@@ -197,7 +192,7 @@
       <h4>Datos del costo de oportunidad</h4>
       <div class="field">
         <label for="cok" class="col-fixed" style="width:200px">Tasa de descuento</label>
-        <InputNumber v-model="cok" :min="0" inputId="integeronly"/>
+        <InputNumber v-model="cok" :min="0" :maxFractionDigits="5"/>
         <label class="col-fixed">%</label>
       </div>
     </div>
@@ -206,8 +201,7 @@
       <div class="formgroup-inline">
         <div class="field">
           <label for="tasaDeDescuento" class="col-fixed" style="width:150px">Tasa de descuento</label>
-          <InputNumber v-model="tasaDeDescuento" :min="0" :minFractionDigits="0" :maxFractionDigits="2"
-                       class="md: w-10rem"/>
+          <label>{{ tasaDeDescuento }}</label>
           <label class="col-fixed">%</label>
         </div>
       </div>
@@ -222,8 +216,7 @@
       <div class="formgroup-inline">
         <div class="field">
           <label for="tceaDeLaOperacion" class="col-fixed" style="width:150px">TCEA de la operación</label>
-          <InputNumber v-model="tceaDeLaOperacion" :min="0" :minFractionDigits="0" :maxFractionDigits="2"
-                       class="md: w-10rem"/>
+          <label>{{ tceaDeLaOperacion }}</label>
           <label class="col-fixed">%</label>
         </div>
       </div>
@@ -237,12 +230,12 @@
     </div>
   </div>
   <div class="card">
-      <DataTable :value="operacion" tableStyle="min-width: 50rem">
-          <Column field="numCuota" header="NumCuota"></Column>
-          <Column field="TEA" header="TEA"></Column>
-          <Column field="TEP" header="TEP"></Column>
-          <Column field="Flujo" header="Flujo"></Column>
-      </DataTable>
+    <DataTable :value="operacion" tableStyle="min-width: 50rem">
+      <Column field="numCuota" header="NumCuota"></Column>
+      <Column field="TEA" header="TEA"></Column>
+      <Column field="TEP" header="TEP"></Column>
+      <Column field="Flujo" header="Flujo"></Column>
+    </DataTable>
   </div>
 
 </template>
@@ -252,7 +245,7 @@ import {ref, onMounted} from "vue";
 import {calculatorApiService} from "@/Calculator/services/calculator-api.service";
 
 onMounted(() => {
-    calculatorApiService.getOperations().then((data) => (operacion.value = data.slice(0, 10)))
+  calculatorApiService.getOperations().then((data) => (operacion.value = data.slice(0, 10)))
 });
 
 const operacion = ref();
@@ -263,10 +256,8 @@ const frec = ref(null);
 const diasPorAnio = ref(null);
 
 const saldoAfinanciar = ref(0);
-const calcularOnBu = ()=>{
-    saldoAfinanciar.value = precioVenta.value - (cuotaInicial.value)/100 * precioVenta.value;
-}
-var montoDelPrestamo = ref(null);
+
+const montoDelPrestamo = ref(0);
 var nCuotasPorAnio = ref(null);
 var nTotalDeCuotas = ref(null);
 const costesNotariales = ref(null);
@@ -298,25 +289,20 @@ var saldoFinal = ref(null);
 var periodoGracia = ref(null);
 var tasaInflacion = 0;
 var inflacionPeriodo = ref(null);
+const sumaCostesGastosIniciales = ref(0);
 
 
-var sumaCostesGastosIniciales = costesNotariales + costesRegistrales + tasacion + comisionDeEstudio + comisionActivacion;
+const calcularOnBu = () => {
+  saldoAfinanciar.value = precioVenta.value - (cuotaInicial.value / 100) * precioVenta.value;
+  sumaCostesGastosIniciales.value = costesNotariales.value + costesRegistrales.value + tasacion.value + comisionDeEstudio.value + comisionActivacion.value;
+  montoDelPrestamo.value = saldoAfinanciar.value + sumaCostesGastosIniciales.value;
+  nCuotasPorAnio.value = diasPorAnio.value / frec.value;
+  nTotalDeCuotas.value = nCuotasPorAnio.value * nAnios.value;
+  segDesgravamenPer.value = (porcentajeSeguroDesgravamen.value / 30) * frec.value;
+  segRiesgoPer.value = (porcentajeSeguroRiesgo.value / 100) * precioVenta.value / nCuotasPorAnio.value;
+  tasaDeDescuento.value = ((Math.pow((1 + (cok.value / 100)), (frec.value / diasPorAnio.value)) - 1) * 100).toFixed(5);
+}
 
-
-
-montoDelPrestamo = saldoAfinanciar + sumaCostesGastosIniciales;
-
-nCuotasPorAnio = diasPorAnio / frec;
-
-nTotalDeCuotas = nCuotasPorAnio / nAnios;
-
-segDesgravamenPer = porcentajeSeguroDesgravamen / (30 * frec);
-
-segRiesgoPer = porcentajeSeguroRiesgo * precioVenta / nCuotasPorAnio;
-
-tasaDeDescuento = Math.pow((1 + cok), (frec / diasPorAnio)) - 1;
-
-tceaDeLaOperacion = Math.pow((1 + tirDeLaOperacion), (diasPorAnio / frec)) - 1;
 
 function TEP() {
   if (cuotaActual <= nTotalDeCuotas) {
