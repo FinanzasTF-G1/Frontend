@@ -219,6 +219,9 @@
           <label>{{ tceaDeLaOperacion }}</label>
           <label class="col-fixed">%</label>
         </div>
+      <div>
+        <label>{{ cuotaPagar }}</label>
+      </div>
       </div>
       <div class="formgroup-inline">
         <div class="field">
@@ -290,6 +293,7 @@ var periodoGracia = ref(null);
 var tasaInflacion = 0;
 var inflacionPeriodo = ref(null);
 const sumaCostesGastosIniciales = ref(0);
+var cuotaPagar = ref(0);
 
 
 const calcularOnBu = () => {
@@ -301,6 +305,7 @@ const calcularOnBu = () => {
   segDesgravamenPer.value = (porcentajeSeguroDesgravamen.value / 30) * frec.value;
   segRiesgoPer.value = (porcentajeSeguroRiesgo.value / 100) * precioVenta.value / nCuotasPorAnio.value;
   tasaDeDescuento.value = ((Math.pow((1 + (cok.value / 100)), (frec.value / diasPorAnio.value)) - 1) * 100).toFixed(5);
+  cuotaPagar.value = PAGO(0.94888, 0.050, 180, 61, 83092.89);
 }
 
 
@@ -310,6 +315,17 @@ function TEP() {
   } else {
     return 0;
   }
+}
+
+function PAGO(tep, pSegDesPer, n, nc, sii) {
+
+  var tasa = tep.value + pSegDesPer.value;
+  var nper = n.value - nc.value + 1;
+  var va = sii.value;
+
+  tasa.value = tasa.value / 100
+
+  return tasa.value * (Math.pow(1 + tasa.value, nper.value)) * va.value / ((Math.pow(1 + tasa.value, nper.value)) - 1);
 }
 
 function saldoInicial() {
