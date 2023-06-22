@@ -219,9 +219,6 @@
           <label>{{ tceaDeLaOperacion }}</label>
           <label class="col-fixed">%</label>
         </div>
-      <div>
-        <label>{{ cuotaPagar }}</label>
-      </div>
       </div>
       <div class="formgroup-inline">
         <div class="field">
@@ -240,12 +237,41 @@
       <Column field="Flujo" header="Flujo"></Column>
     </DataTable>
   </div>
-
+  <table>
+    <thead>
+    <tr>
+      <th>Cuota</th>
+      <th>Saldo Inicial</th>
+      <th>Saldo Inicial Indexado</th>
+      <th>Intereses</th>
+      <th>Cuota</th>
+      <th>Seguro de Desgravamen</th>
+      <th>Seguro de Riesgo</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr v-for="cuota in cuotas" :key="cuota.numero">
+      <td>{{ cuota.numero }}</td>
+      <td>{{ saldoInicial(cuota.numero) }}</td>
+      <td>{{ saldoInicialIndexado(cuota.numero) }}</td>
+      <td>{{ fIntereses(cuota.numero) }}</td>
+      <td>{{ Cuota(cuota.numero) }}</td>
+      <td>{{ SeguroDeDesgravamen(cuota.numero) }}</td>
+      <td>{{ SeguroRiesgo(cuota.numero) }}</td>
+    </tr>
+    </tbody>
+  </table>
+  <div>
+    <label>{{ calcularTEP(1, 10) }}</label>
+  </div>
+  <div>
+    <label>{{ saldoInicial(2) }}</label>
+  </div>
 </template>
 
 <script setup>
 import {ref, onMounted} from "vue";
-import {calculatorApiService} from "@/Calculator/services/calculator-api.service";
+import {calculatorApiService} from "../services/calculator-api.service";
 
 onMounted(() => {
   calculatorApiService.getOperations().then((data) => (operacion.value = data.slice(0, 10)))
@@ -287,15 +313,18 @@ const tirDeLaOperacion = ref(null);
 var tceaDeLaOperacion = ref(null);
 const vanDeLaOperacion = ref(null);
 var cuotaActual = 0;
-var TEA = ref(null);
+var tea = ref(null);
 var saldoFinal = ref(null);
 var periodoGracia = ref(null);
 var tasaInflacion = 0;
 var inflacionPeriodo = ref(null);
 const sumaCostesGastosIniciales = ref(0);
-var cuotaPagar = ref(0);
+var cuotaPagar = ref(0.0);
+const tep = ref(0);
 
-
+var value1 = 1;
+var value2 = 10;
+const cuotas = ref([]);
 const calcularOnBu = () => {
   saldoAfinanciar.value = precioVenta.value - (cuotaInicial.value / 100) * precioVenta.value;
   sumaCostesGastosIniciales.value = costesNotariales.value + costesRegistrales.value + tasacion.value + comisionDeEstudio.value + comisionActivacion.value;
@@ -306,17 +335,42 @@ const calcularOnBu = () => {
   segRiesgoPer.value = (porcentajeSeguroRiesgo.value / 100) * precioVenta.value / nCuotasPorAnio.value;
   tasaDeDescuento.value = ((Math.pow((1 + (cok.value / 100)), (frec.value / diasPorAnio.value)) - 1) * 100).toFixed(5);
   cuotaPagar.value = PAGO(0.94888, 0.050, 180, 61, 83092.89);
+  calcularTEP(parseFloat(cuotaActual.value), parseFloat(tea.value));
 }
 
 
-function TEP() {
-  if (cuotaActual <= nTotalDeCuotas) {
-    return Math.pow((1 + TEA), (frec / diasPorAnio)) - 1;
+const calcularTEP = (cuotaActual, TEA) => {
+  TEA = TEA / 100;
+  if (cuotaActual <= parseFloat(nTotalDeCuotas.value)) {
+    return (
+        (Math.pow(1 + TEA, parseFloat(frec.value) / parseFloat(diasPorAnio.value)) - 1) * 100
+    );
   } else {
     return 0;
   }
 }
 
+const calcularIP = (cuotaActual, ia) => {
+  if (cuotaActual <= parseFloat(nTotalDeCuotas.value)) {
+    return (
+        (Math.pow(1 + id, parseFloat(frec.value) / parseFloat(diasPorAnio.value)) - 1) * 100
+    );
+  } else {
+    return 0;
+  }
+}
+
+const saldoInicial = (cuotaActual) => {
+  if (cuotaActual === 1) {
+    return montoDelPrestamo.value;
+  } else if (cuotaActual <= nTotalDeCuotas.value) {
+    return cuotas.value[cuotaActual - 1].saldoFinal;
+  } else {
+    return 0;
+  }
+};
+
+/*
 function PAGO(tep, pSegDesPer, n, nc, sii) {
 
   var tasa = tep.value + pSegDesPer.value;
@@ -366,7 +420,50 @@ function SeguroRiesgo() {
   if (cuotaActual <= nTotalDeCuotas) {
     return -segRiesgoPer;
   } else return 0;
-}
+}*/
+
+/*-----------------------------comentario-------------------*/
+
+
+const calcularTabla = () => {
+  for (let i = 1; i <= nTotalDeCuotas.value; i++) {
+    cuotas.value.push({numero: i});
+  }
+};
+
+
+const saldoInicialIndexado = (cuota) => {
+  return saldoInicial(cuota) + saldoInicial(cuota) * inflacionPeriodo.value;
+};
+
+const fIntereses = (cuota) => {
+  return saldoInicial(cuota) * TEP();
+};
+
+const Cuota = (cuota) => {
+  if (cuota <= nTotalDeCuotas.value) {
+    if (periodoGracia.value === "T") {
+      return 0;
+    } else if (periodoGracia.value === "P") {
+      return fIntereses(cuota);
+    }
+  }
+};
+
+const SeguroDeDesgravamen = (cuota) => {
+  return saldoInicialIndexado(cuota) * porcentajeSeguroDesgravamen.value;
+};
+
+const SeguroRiesgo = (cuota) => {
+  if (cuota <= nTotalDeCuotas.value) {
+    return -segRiesgoPer.value;
+  } else {
+    return 0;
+  }
+};
+
+// Llamar a la función para calcular la tabla cuando sea necesario
+onMounted(calcularTabla);
 
 
 </script>
