@@ -111,19 +111,19 @@
       <div class="formgroup-inline">
         <div class="field">
           <label for="comisionPeriodica" class="col-fixed" style="width:200px">Comisión Periodica</label>
-          <InputNumber v-model="comisionPeriodica" :min="0" inputId="integeronly"/>
+          <InputNumber v-model="comisionPeriodica" :min="0" :maxFractionDigits="5"/>
         </div>
       </div>
       <div class="formgroup-inline">
         <div class="field">
           <label for="portes" class="col-fixed" style="width:200px">Portes</label>
-          <InputNumber v-model="portes" :min="0" inputId="integeronly"/>
+          <InputNumber v-model="portes" :min="0" :maxFractionDigits="5"/>
         </div>
       </div>
       <div class="formgroup-inline">
         <div class="field">
           <label for="gastosAdministracion" class="col-fixed" style="width:200px">Gastos de Administración</label>
-          <InputNumber v-model="gastosAdministracion" :min="0" inputId="integeronly"/>
+          <InputNumber v-model="gastosAdministracion" :min="0" :maxFractionDigits="5"/>
         </div>
       </div>
       <div class="formgroup-inline">
@@ -265,7 +265,25 @@
     <label>{{ calcularTEP(1, 10) }}</label>
   </div>
   <div>
-    <label>{{ saldoInicial(2) }}</label>
+    <label>{{ saldoInicial(1) }}</label>
+  </div>
+  <div>
+    <label>{{ saldoInicialIndexado(1) }}</label>
+  </div>
+  <div>
+    <label>{{ fIntereses(1) }}</label>
+  </div>
+  <div>
+    <label>{{ seguroDeDesgravamen(1) }}</label>
+  </div>
+  <div>
+    <label>{{ seguroRiesgo(1) }}</label>
+  </div>
+  <div>
+    <label>{{ comision(1) }}</label>
+  </div>
+  <div>
+    <label>{{ calcularPortes(1) }}</label>
   </div>
 </template>
 
@@ -317,7 +335,7 @@ var tea = ref(null);
 var saldoFinal = ref(null);
 var periodoGracia = ref(null);
 var tasaInflacion = 0;
-var inflacionPeriodo = ref(null);
+var inflacionPeriodo = ref(0);
 const sumaCostesGastosIniciales = ref(0);
 var cuotaPagar = ref(0.0);
 const tep = ref(0);
@@ -353,7 +371,7 @@ const calcularTEP = (cuotaActual, TEA) => {
 const calcularIP = (cuotaActual, ia) => {
   if (cuotaActual <= parseFloat(nTotalDeCuotas.value)) {
     return (
-        (Math.pow(1 + id, parseFloat(frec.value) / parseFloat(diasPorAnio.value)) - 1) * 100
+        (Math.pow(1 + ia, parseFloat(frec.value) / parseFloat(diasPorAnio.value)) - 1) * 100
     );
   } else {
     return 0;
@@ -369,6 +387,43 @@ const saldoInicial = (cuotaActual) => {
     return 0;
   }
 };
+
+const saldoInicialIndexado = (cuotaActual) => {
+  return saldoInicial(cuotaActual) + saldoInicial(cuotaActual) * inflacionPeriodo.value;
+};
+
+const fIntereses = (cuotaActual) => {
+  return saldoInicialIndexado(cuotaActual) * calcularTEP(cuotaActual, value2);
+};
+
+const seguroDeDesgravamen = (cuotaActual) => {
+  return (saldoInicialIndexado(cuotaActual) * porcentajeSeguroDesgravamen.value) / 100;
+};
+
+const seguroRiesgo = (cuotaActual) => {
+  if (cuotaActual <= nTotalDeCuotas.value) {
+    return -segRiesgoPer.value;
+  } else {
+    return 0;
+  }
+};
+
+const comision = (cuotaActual) => {
+  if (cuotaActual <= nTotalDeCuotas.value) {
+    return - comisionPeriodica.value;
+  } else {
+    return 0;
+  }
+}
+
+const calcularPortes = (cuotaActual) => {
+  if (cuotaActual <= nTotalDeCuotas.value) {
+    return - portes.value;
+  } else {
+    return 0;
+  }
+}
+
 
 /*
 function PAGO(tep, pSegDesPer, n, nc, sii) {
@@ -432,14 +487,6 @@ const calcularTabla = () => {
 };
 
 
-const saldoInicialIndexado = (cuota) => {
-  return saldoInicial(cuota) + saldoInicial(cuota) * inflacionPeriodo.value;
-};
-
-const fIntereses = (cuota) => {
-  return saldoInicial(cuota) * TEP();
-};
-
 const Cuota = (cuota) => {
   if (cuota <= nTotalDeCuotas.value) {
     if (periodoGracia.value === "T") {
@@ -450,17 +497,6 @@ const Cuota = (cuota) => {
   }
 };
 
-const SeguroDeDesgravamen = (cuota) => {
-  return saldoInicialIndexado(cuota) * porcentajeSeguroDesgravamen.value;
-};
-
-const SeguroRiesgo = (cuota) => {
-  if (cuota <= nTotalDeCuotas.value) {
-    return -segRiesgoPer.value;
-  } else {
-    return 0;
-  }
-};
 
 // Llamar a la función para calcular la tabla cuando sea necesario
 onMounted(calcularTabla);
