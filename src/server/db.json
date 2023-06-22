@@ -4,19 +4,49 @@
       "numCuota": 0,
       "TEA": 0,
       "TEP": 0,
-      "Flujo": 100.0
+      "Flujo": 100
     },
     {
       "numCuota": 1,
       "TEA": 0.1,
       "TEP": 2,
-      "Flujo": 101.0
-    }
-  ,{
+      "Flujo": 101
+    },
+    {
       "numCuota": 2,
       "TEA": 0.2,
       "TEP": 3,
-      "Flujo": 102.0
+      "Flujo": 102
+    }
+  ],
+  "register": [
+    {
+      "name": "papas",
+      "email": "papas@mail.com",
+      "password": "papitas123",
+      "accept": true,
+      "id": 1
+    },
+    {
+      "name": "prueba",
+      "email": "prueba@mail.com",
+      "password": "pruena123",
+      "accept": true,
+      "id": 2
+    },
+    {
+      "name": "a",
+      "email": "a@mail.com",
+      "password": "aea123",
+      "accept": true,
+      "id": 3
+    }
+  ],
+  "login": [
+    {
+      "email": "papas@mail.com",
+      "password": "papitas123",
+      "id": 1
     }
   ]
 }

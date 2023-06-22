@@ -6,32 +6,38 @@
 
       <Card class="loginCard">
           <template #content>
-              <div class="p-fluid">
-                  <div v-focustrap class="card">
-                      <div class="field">
-                          <div class="p-input-icon-right">
-                              <i class="pi pi-envelope" />
-                              <InputText id="email" v-model="email" type="email" placeholder="Email" />
+              <form @submit.prevent="handleSubmit">
+                  <div class="p-fluid">
+                      <div v-focustrap class="card">
+                          <div class="field">
+                              <div class="p-input-icon-right">
+                                  <i class="pi pi-envelope" />
+                                  <InputText id="email" v-model="email" type="email" placeholder="Email" />
+                              </div>
                           </div>
-                      </div>
-                      <div class="field">
-                          <div class="p-float-label">
-                              <Password v-model="password" :feedback="false" />
-                              <label for="password">Contraseña</label>
+                          <div class="field">
+                              <div class="p-float-label">
+                                  <Password v-model="password" :feedback="false" />
+                                  <label for="password">Contraseña</label>
+                              </div>
                           </div>
-                      </div>
-                      <router-link to="/home">
-                          <Button type="submit" label="Ingresa" class="mt-2" />
-                      </router-link>
+                          <!--
+                          <router-link to="/home">
 
-                      <div class="field-toSignUp">
-                          <label><br>¿Aún no te has registrado?</label>
-                          <router-link to="/sign-up">
-                              <Button type="button" label="Regístrate ahora" class="mt-2" />
                           </router-link>
+                          -->
+                          <Button type="submit" label="Ingresa" class="mt-2" />
+
+                          <div class="field-toSignUp">
+                              <label><br>¿Aún no te has registrado?</label>
+                              <router-link to="/sign-up">
+                                  <Button type="button" label="Regístrate ahora" class="mt-2" />
+                              </router-link>
+                          </div>
                       </div>
                   </div>
-              </div>
+              </form>
+
           </template>
 
       </Card>
@@ -41,8 +47,20 @@
 
 <script setup>
 import {ref} from 'vue';
+import axios from "axios";
 const email = ref();
 const password = ref();
+
+//useVuelidate()
+const handleSubmit = async () => {
+    const data = {
+        email: email.value,
+        password: password.value,
+    };
+
+    const response = await axios.post('http://localhost:3000/api/v1/login', data);
+    console.log(response);
+}
 
 </script>
 

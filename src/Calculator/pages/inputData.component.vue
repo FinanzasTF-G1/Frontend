@@ -466,7 +466,7 @@ const SeguroRiesgo = (cuota) => {
 onMounted(calcularTabla);
 
 
-</script>
+</script>+-+-
 
 <style scoped>
 
