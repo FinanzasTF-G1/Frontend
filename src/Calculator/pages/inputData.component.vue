@@ -35,6 +35,13 @@
           <InputNumber v-model="diasPorAnio" :min="0" :minFractionDigits="0" :maxFractionDigits="2"/>
         </div>
       </div>
+      <div class="formgroup-inline">
+        <div class="field">
+          <label for="tea" class="col-fixed" style="width:200px">Tasa Efectiva Anual</label>
+          <InputNumber v-model="tea" :min="0" :maxFractionDigits="5"/>
+          <label class="col-fixed">%</label>
+        </div>
+      </div>
     </div>
     <div class="card col-5">
       <h4>Resultado del financiamiento</h4>
@@ -285,6 +292,12 @@
   <div>
     <label>{{ calcularPortes(1) }}</label>
   </div>
+  <div>
+    <label>{{ calcularGastosAdministracion(1) }}</label>
+  </div>
+  <div>
+    <label>{{ tea }}</label>
+  </div>
 </template>
 
 <script setup>
@@ -340,6 +353,12 @@ const sumaCostesGastosIniciales = ref(0);
 var cuotaPagar = ref(0.0);
 const tep = ref(0);
 
+let arrayTEAs = [];
+let arrayNcuotasActuales = [];
+
+/*const varResultado = calcularVAR(flujosEfectivo, tasaDescuento);
+const tirResultado = calcularTIR(flujosEfectivo);*/
+
 var value1 = 1;
 var value2 = 10;
 const cuotas = ref([]);
@@ -356,12 +375,17 @@ const calcularOnBu = () => {
   calcularTEP(parseFloat(cuotaActual.value), parseFloat(tea.value));
 }
 
+const calcularArrayNumeroCuotas = () => {
+  for (var i = 0; i <= nTotalDeCuotas; i++) {
+    arrayNcuotasActuales.push(i);
+  }
+}
 
-const calcularTEP = (cuotaActual, TEA) => {
-  TEA = TEA / 100;
+const calcularTEP = (cuotaActual, arrayTEA) => {
+  arrayTEA[cuotaActual] = arrayTEA[cuotaActual] / 100;
   if (cuotaActual <= parseFloat(nTotalDeCuotas.value)) {
     return (
-        (Math.pow(1 + TEA, parseFloat(frec.value) / parseFloat(diasPorAnio.value)) - 1) * 100
+        (Math.pow(1 + arrayTEA[cuotaActual], parseFloat(frec.value) / parseFloat(diasPorAnio.value)) - 1) * 100
     );
   } else {
     return 0;
@@ -410,7 +434,7 @@ const seguroRiesgo = (cuotaActual) => {
 
 const comision = (cuotaActual) => {
   if (cuotaActual <= nTotalDeCuotas.value) {
-    return - comisionPeriodica.value;
+    return -comisionPeriodica.value;
   } else {
     return 0;
   }
@@ -418,25 +442,37 @@ const comision = (cuotaActual) => {
 
 const calcularPortes = (cuotaActual) => {
   if (cuotaActual <= nTotalDeCuotas.value) {
-    return - portes.value;
+    return -portes.value;
   } else {
     return 0;
   }
 }
 
+const calcularGastosAdministracion = (cuotaActual) => {
+  if (cuotaActual <= nTotalDeCuotas.value) {
+    return -gastosAdministracion.value;
+  } else {
+    return 0;
+  }
+}
 
-/*
-function PAGO(tep, pSegDesPer, n, nc, sii) {
+const calcularSaldoFinal = (cuotaActual) => {
+
+}
+/*function PAGO(tep, nTotaldeCuotas, cuotaActual, sii) {
 
   var tasa = tep.value + pSegDesPer.value;
-  var nper = n.value - nc.value + 1;
+  var nper = n.value - cuotaActual.value + 1;
   var va = sii.value;
 
   tasa.value = tasa.value / 100
 
   return tasa.value * (Math.pow(1 + tasa.value, nper.value)) * va.value / ((Math.pow(1 + tasa.value, nper.value)) - 1);
-}
+}*/
 
+
+
+/*
 function saldoInicial() {
   if (cuotaActual === 1) {
     return montoDelPrestamo;
@@ -486,6 +522,43 @@ const calcularTabla = () => {
   }
 };
 
+// Función para calcular el VAN (VAR) de una serie de flujos de efectivo y una tasa de descuento
+/*function calcularVAR(flujosEfectivo, tasaDescuento) {
+  let varTotal = 0;
+  for (let i = 0; i < flujosEfectivo.length; i++) {
+    varTotal += flujosEfectivo[i] / Math.pow((1 + tasaDescuento), i + 1);
+  }
+  return varTotal;
+}
+
+// Función para calcular la TIR (TIR) de una serie de flujos de efectivo
+function calcularTIR(flujosEfectivo) {
+  let tasaInferior = 0;
+  let tasaSuperior = 1;
+  let tasaMedia = (tasaInferior + tasaSuperior) / 2;
+  let varMedia = calcularVAR(flujosEfectivo, tasaMedia);
+  const limiteError = 0.00001;
+
+  while (Math.abs(varMedia) > limiteError) {
+    if (varMedia > 0) {
+      tasaInferior = tasaMedia;
+    } else {
+      tasaSuperior = tasaMedia;
+    }
+    tasaMedia = (tasaInferior + tasaSuperior) / 2;
+    varMedia = calcularVAR(flujosEfectivo, tasaMedia);
+  }
+
+  return tasaMedia;
+}
+
+// Ejemplo de uso
+const flujosEfectivo = [-1000, 500, 300, 200, 100]; // Flujos de efectivo: -1000, 500, 300, 200, 100
+const tasaDescuento = 0.1; // Tasa de descuento: 10%
+
+
+console.log("VAR:", varResultado);
+console.log("TIR:", tirResultado);*/
 
 const Cuota = (cuota) => {
   if (cuota <= nTotalDeCuotas.value) {
