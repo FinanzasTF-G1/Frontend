@@ -285,6 +285,15 @@
   <div>
     <label>{{ calcularPortes(1) }}</label>
   </div>
+
+    <div>
+        <label>Acá debe estar el PAGO: </label>
+        <label>{{ PAGO(0.79741, 0.050, 180, 13, 98881.70) }}</label>
+    </div>
+    <!--
+
+    -->
+
 </template>
 
 <script setup>
@@ -340,6 +349,12 @@ const sumaCostesGastosIniciales = ref(0);
 var cuotaPagar = ref(0.0);
 const tep = ref(0);
 
+const tep2 = ref(0);
+const pSegDesPer = ref(0);
+const n = ref(0);
+const nc = ref(0);
+const sii = ref(0);
+
 var value1 = 1;
 var value2 = 10;
 const cuotas = ref([]);
@@ -352,7 +367,9 @@ const calcularOnBu = () => {
   segDesgravamenPer.value = (porcentajeSeguroDesgravamen.value / 30) * frec.value;
   segRiesgoPer.value = (porcentajeSeguroRiesgo.value / 100) * precioVenta.value / nCuotasPorAnio.value;
   tasaDeDescuento.value = ((Math.pow((1 + (cok.value / 100)), (frec.value / diasPorAnio.value)) - 1) * 100).toFixed(5);
-  cuotaPagar.value = PAGO(0.94888, 0.050, 180, 61, 83092.89);
+  //cuotaPagar.value =
+      //PAGO(0.94888, 0.050, 180, 61, 83092.89);
+      PAGO(tep2.value, pSegDesPer.value, n.value, nc.value, sii.value);
   calcularTEP(parseFloat(cuotaActual.value), parseFloat(tea.value));
 }
 
@@ -425,18 +442,20 @@ const calcularPortes = (cuotaActual) => {
 }
 
 
-/*
-function PAGO(tep, pSegDesPer, n, nc, sii) {
 
-  var tasa = tep.value + pSegDesPer.value;
-  var nper = n.value - nc.value + 1;
-  var va = sii.value;
+const PAGO = (tep, pSegDesPer, n, nc, sii) => {
 
-  tasa.value = tasa.value / 100
+  var tasa = tep + pSegDesPer;
+  var nper = n - nc + 1;
+  var va = sii;
 
-  return tasa.value * (Math.pow(1 + tasa.value, nper.value)) * va.value / ((Math.pow(1 + tasa.value, nper.value)) - 1);
+    if (!isNaN(tasa)) {
+        tasa = tasa / 100;
+    }
+
+  return (tasa * (Math.pow(1 + tasa, nper)) * va) / ((Math.pow(1 + tasa, nper) - 1));
 }
-
+/*
 function saldoInicial() {
   if (cuotaActual === 1) {
     return montoDelPrestamo;

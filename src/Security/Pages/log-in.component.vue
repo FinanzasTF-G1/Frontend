@@ -21,12 +21,12 @@
                                   <label for="password">Contraseña</label>
                               </div>
                           </div>
-                          <!--
-                          <router-link to="/home">
 
+                          <router-link to="/home">
+                              <Button type="submit" label="Ingresa" class="mt-2" />
                           </router-link>
-                          -->
-                          <Button type="submit" label="Ingresa" class="mt-2" />
+
+
 
                           <div class="field-toSignUp">
                               <label><br>¿Aún no te has registrado?</label>
