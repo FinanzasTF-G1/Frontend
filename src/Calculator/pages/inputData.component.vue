@@ -37,8 +37,8 @@
       </div>
       <div class="formgroup-inline">
         <div class="field">
-          <label for="tea" class="col-fixed" style="width:200px">Tasa Efectiva Anual</label>
-          <InputNumber v-model="tea" :min="0" :maxFractionDigits="5"/>
+          <label for="porcentajeTea" class="col-fixed" style="width:200px">Tasa Efectiva Anual</label>
+          <InputNumber v-model="porcentajeTea" :minFractionDigits="0" :maxFractionDigits="5"/>
           <label class="col-fixed">%</label>
         </div>
       </div>
@@ -269,35 +269,44 @@
     </tbody>
   </table>
   <div>
-    <label>{{ calcularTEP(1, 10) }}</label>
+    <label><label>Calcular tep </label>{{ calcularTEP(1) }}</label>
   </div>
   <div>
-    <label>{{ saldoInicial(1) }}</label>
+    <label><label>Saldo inicial </label>{{ saldoInicial(1) }}</label>
   </div>
   <div>
-    <label>{{ saldoInicialIndexado(1) }}</label>
+    <label><label>Saldo inicial Indexado </label>{{ saldoInicialIndexado(1) }}</label>
   </div>
   <div>
-    <label>{{ fIntereses(1) }}</label>
+    <label><label>Formula intereses </label>{{ fIntereses(1) }}</label>
   </div>
   <div>
-    <label>{{ seguroDeDesgravamen(1) }}</label>
+    <label><label>Seguro de desgravamen </label>{{ seguroDeDesgravamen(1) }}</label>
   </div>
   <div>
-    <label>{{ seguroRiesgo(1) }}</label>
+    <label><label>Seguro de riesgo </label>{{ seguroRiesgo(1) }}</label>
   </div>
   <div>
-    <label>{{ comision(1) }}</label>
+    <label><label>Comision </label>{{ comision(1) }}</label>
   </div>
   <div>
-    <label>{{ calcularPortes(1) }}</label>
+    <label><label>Portes </label>{{ calcularPortes(1) }}</label>
   </div>
   <div>
-    <label>{{ calcularGastosAdministracion(1) }}</label>
+    <label><label>Gastos administrativos </label>{{ calcularGastosAdministracion(1) }}</label>
   </div>
   <div>
-    <label>{{ tea }}</label>
+    <label><label>Tasa efectiva anual </label>{{ tea }}</label>
   </div>
+
+  <div>
+    <label>Acá debe estar el PAGO: </label>
+<!--    <label>{{ PAGO(0.79741, 0.050, 180, 13, 98881.70) }}</label>-->
+  </div>
+  <!--
+
+  -->
+
 </template>
 
 <script setup>
@@ -344,20 +353,28 @@ const tirDeLaOperacion = ref(null);
 var tceaDeLaOperacion = ref(null);
 const vanDeLaOperacion = ref(null);
 var cuotaActual = 0;
-var tea = ref(null);
+var tea = ref();
+var porcentajeTea=ref();
 var saldoFinal = ref(null);
 var periodoGracia = ref(null);
 var tasaInflacion = 0;
 var inflacionPeriodo = ref(0);
 const sumaCostesGastosIniciales = ref(0);
 var cuotaPagar = ref(0.0);
-const tep = ref(0);
+const tep = ref();
 
-let arrayTEAs = [];
-let arrayNcuotasActuales = [];
+var arrayTEAs = [];
+var arrayNcuotasActuales = [];
+
 
 /*const varResultado = calcularVAR(flujosEfectivo, tasaDescuento);
 const tirResultado = calcularTIR(flujosEfectivo);*/
+
+const tep2 = ref(0);
+const pSegDesPer = ref(0);
+const n = ref(0);
+const nc = ref(0);
+const sii = ref(0);
 
 var value1 = 1;
 var value2 = 10;
@@ -371,24 +388,34 @@ const calcularOnBu = () => {
   segDesgravamenPer.value = (porcentajeSeguroDesgravamen.value / 30) * frec.value;
   segRiesgoPer.value = (porcentajeSeguroRiesgo.value / 100) * precioVenta.value / nCuotasPorAnio.value;
   tasaDeDescuento.value = ((Math.pow((1 + (cok.value / 100)), (frec.value / diasPorAnio.value)) - 1) * 100).toFixed(5);
-  cuotaPagar.value = PAGO(0.94888, 0.050, 180, 61, 83092.89);
-  calcularTEP(parseFloat(cuotaActual.value), parseFloat(tea.value));
+  //cuotaPagar.value =
+  //PAGO(0.94888, 0.050, 180, 61, 83092.89);
+  //PAGO(tep2.value, pSegDesPer.value, n.value, nc.value, sii.value);
+  //calcularTEP(parseFloat(cuotaActual.value), parseFloat(tea.value));
+  calcularArrayTeas();
+  calcularArrayNumeroCuotas();
+  tea.value=porcentajeTea.value/100;
 }
 
 const calcularArrayNumeroCuotas = () => {
-  for (var i = 0; i <= nTotalDeCuotas; i++) {
+  for (var i = 0; i <= nTotalDeCuotas.value; i++) {
     arrayNcuotasActuales.push(i);
   }
 }
 
-const calcularTEP = (cuotaActual, arrayTEA) => {
-  arrayTEA[cuotaActual] = arrayTEA[cuotaActual] / 100;
+const calcularArrayTeas = () => {
+  for (var i = 0; i <= nTotalDeCuotas.value; i++) {
+    arrayTEAs.push(tea);
+  }
+}
+
+const calcularTEP = (cuotaActual) => {
   if (cuotaActual <= parseFloat(nTotalDeCuotas.value)) {
     return (
-        (Math.pow(1 + arrayTEA[cuotaActual], parseFloat(frec.value) / parseFloat(diasPorAnio.value)) - 1) * 100
+        (Math.pow(1 + tea.value, parseFloat(frec.value) / parseFloat(diasPorAnio.value)) - 1) * 100
     );
   } else {
-    return 0;
+    return -1;
   }
 }
 
@@ -417,7 +444,7 @@ const saldoInicialIndexado = (cuotaActual) => {
 };
 
 const fIntereses = (cuotaActual) => {
-  return saldoInicialIndexado(cuotaActual) * calcularTEP(cuotaActual, value2);
+  return (saldoInicialIndexado(cuotaActual) * calcularTEP(cuotaActual))/100;
 };
 
 const seguroDeDesgravamen = (cuotaActual) => {
@@ -458,124 +485,103 @@ const calcularGastosAdministracion = (cuotaActual) => {
 
 const calcularSaldoFinal = (cuotaActual) => {
 
-}
-/*function PAGO(tep, nTotaldeCuotas, cuotaActual, sii) {
 
-  var tasa = tep.value + pSegDesPer.value;
-  var nper = n.value - cuotaActual.value + 1;
-  var va = sii.value;
+  const PAGO = (tep, pSegDesPer, n, nc, sii) => {
 
-  tasa.value = tasa.value / 100
+    var tasa = tep + pSegDesPer;
+    var nper = n - nc + 1;
+    var va = sii;
 
-  return tasa.value * (Math.pow(1 + tasa.value, nper.value)) * va.value / ((Math.pow(1 + tasa.value, nper.value)) - 1);
-}*/
+    if (!isNaN(tasa)) {
+      tasa = tasa / 100;
+    }
 
-
-
-/*
-function saldoInicial() {
-  if (cuotaActual === 1) {
-    return montoDelPrestamo;
-  } else {
-    if (cuotaActual <= nTotalDeCuotas) {
-      return saldoFinal;
-    } else return 0;
+    return (tasa * (Math.pow(1 + tasa, nper)) * va) / ((Math.pow(1 + tasa, nper) - 1));
   }
-}
-
-function saldoInicialIndexado() {
-  return saldoInicial() + saldoInicial() * inflacionPeriodo;
-}
-
-function fIntereses() {
-  return saldoInicial() * TEP();
-}
-
-function Cuota() {
-  if (cuotaActual <= nTotalDeCuotas) {
-    if (periodoGracia === 'T') {
-      return 0;
+  /*
+  function saldoInicial() {
+    if (cuotaActual === 1) {
+      return montoDelPrestamo;
     } else {
-      if (periodoGracia === 'P') {
-        return fIntereses();
+      if (cuotaActual <= nTotalDeCuotas) {
+        return saldoFinal;
+      } else return 0;
+    }
+  }
+
+  function Cuota() {
+    if (cuotaActual <= nTotalDeCuotas) {
+      if (periodoGracia === 'T') {
+        return 0;
+      } else {
+        if (periodoGracia === 'P') {
+          return fIntereses();
+        }
       }
     }
   }
-}
 
-function SeguroDeDesgravamen() {
-  return saldoInicialIndexado() * porcentajeSeguroDesgravamen;
-}
-
-function SeguroRiesgo() {
-  if (cuotaActual <= nTotalDeCuotas) {
-    return -segRiesgoPer;
-  } else return 0;
-}*/
-
-/*-----------------------------comentario-------------------*/
+  /*-----------------------------comentario-------------------*/
 
 
-const calcularTabla = () => {
-  for (let i = 1; i <= nTotalDeCuotas.value; i++) {
-    cuotas.value.push({numero: i});
-  }
-};
+  const calcularTabla = () => {
+    for (let i = 1; i <= nTotalDeCuotas.value; i++) {
+      cuotas.value.push({numero: i});
+    }
+  };
 
 // Función para calcular el VAN (VAR) de una serie de flujos de efectivo y una tasa de descuento
-/*function calcularVAR(flujosEfectivo, tasaDescuento) {
-  let varTotal = 0;
-  for (let i = 0; i < flujosEfectivo.length; i++) {
-    varTotal += flujosEfectivo[i] / Math.pow((1 + tasaDescuento), i + 1);
-  }
-  return varTotal;
-}
-
-// Función para calcular la TIR (TIR) de una serie de flujos de efectivo
-function calcularTIR(flujosEfectivo) {
-  let tasaInferior = 0;
-  let tasaSuperior = 1;
-  let tasaMedia = (tasaInferior + tasaSuperior) / 2;
-  let varMedia = calcularVAR(flujosEfectivo, tasaMedia);
-  const limiteError = 0.00001;
-
-  while (Math.abs(varMedia) > limiteError) {
-    if (varMedia > 0) {
-      tasaInferior = tasaMedia;
-    } else {
-      tasaSuperior = tasaMedia;
+  /*function calcularVAR(flujosEfectivo, tasaDescuento) {
+    let varTotal = 0;
+    for (let i = 0; i < flujosEfectivo.length; i++) {
+      varTotal += flujosEfectivo[i] / Math.pow((1 + tasaDescuento), i + 1);
     }
-    tasaMedia = (tasaInferior + tasaSuperior) / 2;
-    varMedia = calcularVAR(flujosEfectivo, tasaMedia);
+    return varTotal;
   }
 
-  return tasaMedia;
-}
+  // Función para calcular la TIR (TIR) de una serie de flujos de efectivo
+  function calcularTIR(flujosEfectivo) {
+    let tasaInferior = 0;
+    let tasaSuperior = 1;
+    let tasaMedia = (tasaInferior + tasaSuperior) / 2;
+    let varMedia = calcularVAR(flujosEfectivo, tasaMedia);
+    const limiteError = 0.00001;
 
-// Ejemplo de uso
-const flujosEfectivo = [-1000, 500, 300, 200, 100]; // Flujos de efectivo: -1000, 500, 300, 200, 100
-const tasaDescuento = 0.1; // Tasa de descuento: 10%
-
-
-console.log("VAR:", varResultado);
-console.log("TIR:", tirResultado);*/
-
-const Cuota = (cuota) => {
-  if (cuota <= nTotalDeCuotas.value) {
-    if (periodoGracia.value === "T") {
-      return 0;
-    } else if (periodoGracia.value === "P") {
-      return fIntereses(cuota);
+    while (Math.abs(varMedia) > limiteError) {
+      if (varMedia > 0) {
+        tasaInferior = tasaMedia;
+      } else {
+        tasaSuperior = tasaMedia;
+      }
+      tasaMedia = (tasaInferior + tasaSuperior) / 2;
+      varMedia = calcularVAR(flujosEfectivo, tasaMedia);
     }
-  }
-};
 
+    return tasaMedia;
+  }
+
+  // Ejemplo de uso
+  const flujosEfectivo = [-1000, 500, 300, 200, 100]; // Flujos de efectivo: -1000, 500, 300, 200, 100
+  const tasaDescuento = 0.1; // Tasa de descuento: 10%
+
+
+  console.log("VAR:", varResultado);
+  console.log("TIR:", tirResultado);*/
+
+  const Cuota = (cuota) => {
+    if (cuota <= nTotalDeCuotas.value) {
+      if (periodoGracia.value === "T") {
+        return 0;
+      } else if (periodoGracia.value === "P") {
+        return fIntereses(cuota);
+      }
+    }
+  };
+}
 
 // Llamar a la función para calcular la tabla cuando sea necesario
-onMounted(calcularTabla);
 
-
-</script>+-+-
+</script>
 
 <style scoped>
 
