@@ -304,7 +304,6 @@
   <div>
     <label><label>Tasa efectiva anual </label>{{ tea }}</label>
   </div>
-
   <div>
     <label>Acá debe estar el PAGO: </label>
     <label>{{ PAGO(0.79741, 0.050, 180, 13, 98881.70) }}</label>
