@@ -275,6 +275,9 @@
     <label><label>Calcular tep </label>{{ calcularTEP(1) }}</label>
   </div>
   <div>
+    <label><label>IP </label>{{ calcularIP(1, 0) }}</label>
+  </div>
+  <div>
     <label><label>Saldo inicial </label>{{ saldoInicial(1) }}</label>
   </div>
   <div>
@@ -282,6 +285,9 @@
   </div>
   <div>
     <label><label>Formula intereses </label>{{ fIntereses(1) }}</label>
+  </div>
+  <div>
+    <label>Cuota {{ Cuota(1) }}</label>
   </div>
   <div>
     <label><label>Seguro de desgravamen </label>{{ seguroDeDesgravamen(1) }}</label>
@@ -301,14 +307,10 @@
   <div>
     <label><label>Tasa efectiva anual </label>{{ tea }}</label>
   </div>
-
   <div>
     <label>Acá debe estar el PAGO: </label>
-<!--    <label>{{ PAGO(0.79741, 0.050, 180, 13, 98881.70) }}</label>-->
+    <label>{{ PAGO(0.79741, 0.050, 180, 13, 98881.70) }}</label>
   </div>
-  <!--
-
-  -->
 
 </template>
 
@@ -415,7 +417,7 @@ const calcularOnBu = () => {
   //calcularTEP(parseFloat(cuotaActual.value), parseFloat(tea.value));
   calcularArrayTeas();
   calcularArrayNumeroCuotas();
-  tea.value=porcentajeTea.value/100;
+  tea.value = porcentajeTea.value / 100;
 }
 
 const calcularArrayNumeroCuotas = () => {
@@ -465,7 +467,7 @@ const saldoInicialIndexado = (cuotaActual) => {
 };
 
 const fIntereses = (cuotaActual) => {
-  return (saldoInicialIndexado(cuotaActual) * calcularTEP(cuotaActual))/100;
+  return (saldoInicialIndexado(cuotaActual) * calcularTEP(cuotaActual)) / 100;
 };
 
 const seguroDeDesgravamen = (cuotaActual) => {
@@ -504,22 +506,34 @@ const calcularGastosAdministracion = (cuotaActual) => {
   }
 }
 
-const calcularSaldoFinal = (cuotaActual) => {
+const PAGO = (tep, pSegDesPer, n, nc, sii) => {
 
+  var tasa = tep + pSegDesPer;
+  var nper = n - nc + 1;
+  var va = sii;
 
-  const PAGO = (tep, pSegDesPer, n, nc, sii) => {
-
-    var tasa = tep + pSegDesPer;
-    var nper = n - nc + 1;
-    var va = sii;
-
-    if (!isNaN(tasa)) {
-      tasa = tasa / 100;
-    }
-
-    return (tasa * (Math.pow(1 + tasa, nper)) * va) / ((Math.pow(1 + tasa, nper) - 1));
+  if (!isNaN(tasa)) {
+    tasa = tasa / 100;
   }
-  /*
+
+  return -((tasa * (Math.pow(1 + tasa, nper)) * va) / ((Math.pow(1 + tasa, nper) - 1)));
+}
+
+const Cuota = (cuotaActual) => {
+  if (cuotaActual <= nTotalDeCuotas.value) {
+    var vCuota=PAGO(tep.value,pSegDesPer.value,nTotalDeCuotas,cuotaActual,saldoInicialIndexado(cuotaActual))
+    if (periodoGracia === 'T') {
+      return 0;
+    } else if (periodoGracia === 'P') {
+      return fIntereses(cuotaActual);
+    } else {
+      return PAGO(vCuota.value,pSegDesPer.value,nTotalDeCuotas.value,cuotaActual,saldoInicialIndexado(cuotaActual));
+    }
+  }
+}
+
+/*const calcularSaldoFinal = (cuotaActual) => {
+
   function saldoInicial() {
     if (cuotaActual === 1) {
       return montoDelPrestamo;
@@ -541,64 +555,55 @@ const calcularSaldoFinal = (cuotaActual) => {
       }
     }
   }
+}
+/!*-----------------------------comentario-------------------*!/
 
-  /*-----------------------------comentario-------------------*/
 
-
-  const calcularTabla = () => {
-    for (let i = 1; i <= nTotalDeCuotas.value; i++) {
-      cuotas.value.push({numero: i});
-    }
-  };
+const calcularTabla = () => {
+  for (let i = 1; i <= nTotalDeCuotas.value; i++) {
+    cuotas.value.push({numero: i});
+  }
+};
 
 // Función para calcular el VAN (VAR) de una serie de flujos de efectivo y una tasa de descuento
-  /*function calcularVAR(flujosEfectivo, tasaDescuento) {
-    let varTotal = 0;
-    for (let i = 0; i < flujosEfectivo.length; i++) {
-      varTotal += flujosEfectivo[i] / Math.pow((1 + tasaDescuento), i + 1);
-    }
-    return varTotal;
+function calcularVAR(flujosEfectivo, tasaDescuento) {
+  let varTotal = 0;
+  for (let i = 0; i < flujosEfectivo.length; i++) {
+    varTotal += flujosEfectivo[i] / Math.pow((1 + tasaDescuento), i + 1);
   }
-
-  // Función para calcular la TIR (TIR) de una serie de flujos de efectivo
-  function calcularTIR(flujosEfectivo) {
-    let tasaInferior = 0;
-    let tasaSuperior = 1;
-    let tasaMedia = (tasaInferior + tasaSuperior) / 2;
-    let varMedia = calcularVAR(flujosEfectivo, tasaMedia);
-    const limiteError = 0.00001;
-
-    while (Math.abs(varMedia) > limiteError) {
-      if (varMedia > 0) {
-        tasaInferior = tasaMedia;
-      } else {
-        tasaSuperior = tasaMedia;
-      }
-      tasaMedia = (tasaInferior + tasaSuperior) / 2;
-      varMedia = calcularVAR(flujosEfectivo, tasaMedia);
-    }
-
-    return tasaMedia;
-  }
-
-  // Ejemplo de uso
-  const flujosEfectivo = [-1000, 500, 300, 200, 100]; // Flujos de efectivo: -1000, 500, 300, 200, 100
-  const tasaDescuento = 0.1; // Tasa de descuento: 10%
-
-
-  console.log("VAR:", varResultado);
-  console.log("TIR:", tirResultado);*/
-
-  const Cuota = (cuota) => {
-    if (cuota <= nTotalDeCuotas.value) {
-      if (periodoGracia.value === "T") {
-        return 0;
-      } else if (periodoGracia.value === "P") {
-        return fIntereses(cuota);
-      }
-    }
-  };
+  return varTotal;
 }
+
+// Función para calcular la TIR (TIR) de una serie de flujos de efectivo
+function calcularTIR(flujosEfectivo) {
+  let tasaInferior = 0;
+  let tasaSuperior = 1;
+  let tasaMedia = (tasaInferior + tasaSuperior) / 2;
+  let varMedia = calcularVAR(flujosEfectivo, tasaMedia);
+  const limiteError = 0.00001;
+
+  while (Math.abs(varMedia) > limiteError) {
+    if (varMedia > 0) {
+      tasaInferior = tasaMedia;
+    } else {
+      tasaSuperior = tasaMedia;
+    }
+    tasaMedia = (tasaInferior + tasaSuperior) / 2;
+    varMedia = calcularVAR(flujosEfectivo, tasaMedia);
+  }
+
+  return tasaMedia;
+}
+
+// Ejemplo de uso
+const flujosEfectivo = [-1000, 500, 300, 200, 100]; // Flujos de efectivo: -1000, 500, 300, 200, 100
+const tasaDescuento = 0.1; // Tasa de descuento: 10%
+
+
+console.log("VAR:", varResultado);
+console.log("TIR:", tirResultado);
+
+*/
 
 // Llamar a la función para calcular la tabla cuando sea necesario
 
