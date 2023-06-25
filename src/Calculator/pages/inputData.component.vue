@@ -593,8 +593,8 @@ console.log("TIR:", tirResultado);
 .card {
   background: beige;
   border-radius: 10px;
-  margin: auto;
-  margin-bottom: 1rem;
+  margin-left: 10px;
+  margin-bottom: 10px;
   font-family: sans-serif;
 }
 </style>
