@@ -236,38 +236,41 @@
       </div>
     </div>
   </div>
-  <!--  <div class="card">
-      <DataTable :value="operacion" tableStyle="min-width: 50rem">
-        <Column field="numCuota" header="NumCuota"></Column>
-        <Column field="TEA" header="TEA"></Column>
-        <Column field="TEP" header="TEP"></Column>
-        <Column field="Flujo" header="Flujo"></Column>
+  <div class="card">
+    <!-- Sacamos el datatable ciela-->
+      <div class="flex justify-content-center mb-4"></div>
+      <DataTable :value="datos" tableStyle="min-width: 50rem">
+          <Column field="code" header="Code"></Column>
+          <Column field="name" header="Name"></Column>
+          <Column field="category" header="Category"></Column>
+          <Column field="quantity" header="Quantity"></Column>
       </DataTable>
-    </div>
-    <table>
-      <thead>
-      <tr>
-        <th>Cuota</th>
-        <th>Saldo Inicial</th>
-        <th>Saldo Inicial Indexado</th>
-        <th>Intereses</th>
-        <th>Cuota</th>
-        <th>Seguro de Desgravamen</th>
-        <th>Seguro de Riesgo</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr v-for="cuota in cuotas" :key="cuota.numero">
-        <td>{{ cuota.numero }}</td>
-        <td>{{ saldoInicial(cuota.numero) }}</td>
-        <td>{{ saldoInicialIndexado(cuota.numero) }}</td>
-        <td>{{ fIntereses(cuota.numero) }}</td>
-        <td>{{ Cuota(cuota.numero) }}</td>
-        <td>{{ SeguroDeDesgravamen(cuota.numero) }}</td>
-        <td>{{ SeguroRiesgo(cuota.numero) }}</td>
-      </tr>
-      </tbody>
-    </table>-->
+
+  </div>
+  <table>
+    <thead>
+    <tr>
+      <th>Cuota</th>
+      <th>Saldo Inicial</th>
+      <th>Saldo Inicial Indexado</th>
+      <th>Intereses</th>
+      <th>Cuota</th>
+      <th>Seguro de Desgravamen</th>
+      <th>Seguro de Riesgo</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr v-for="cuota in cuotas" :key="cuota.numero">
+      <td>{{ cuota.numero }}</td>
+      <td>{{ saldoInicial(cuota.numero) }}</td>
+      <td>{{ saldoInicialIndexado(cuota.numero) }}</td>
+      <td>{{ fIntereses(cuota.numero) }}</td>
+      <td>{{ Cuota(cuota.numero) }}</td>
+      <td>{{ SeguroDeDesgravamen(cuota.numero) }}</td>
+      <td>{{ SeguroRiesgo(cuota.numero) }}</td>
+    </tr>
+    </tbody>
+  </table>
   <div>
     <label><label>Calcular tep </label>{{ calcularTEP(1) }}</label>
   </div>
@@ -313,12 +316,29 @@
 
 <script setup>
 import {ref, onMounted} from "vue";
-import {calculatorApiService} from "../services/calculator-api.service";
+import {CalculatorService} from "@/Calculator/services/CalculatorService";
 
 onMounted(() => {
-  calculatorApiService.getOperations().then((data) => (operacion.value = data.slice(0, 10)))
+    CalculatorService.getData().then((data)=>(datos.value = data));
 });
+/*
+const updatedProducts = CalculatorService.editData('1001', {
+    name: 'New Name',
+    price: 99,
+    inventoryStatus: 'LOWSTOCK'
+});*/
 
+CalculatorService.editData('1001', { price: 880 })
+    .then(updatedData => {
+        CalculatorService.totalData = updatedData;
+        console.log('Datos modificados:', updatedData);
+    })
+    .catch(error => {
+        console.error('Error al modificar los datos:', error);
+    });
+
+
+const datos=ref();
 const operacion = ref();
 var precioVenta = ref();
 var cuotaInicial = ref(null);
@@ -356,9 +376,9 @@ var tceaDeLaOperacion = ref(null);
 const vanDeLaOperacion = ref(null);
 var cuotaActual = 0;
 var tea = ref();
-var porcentajeTea = ref();
+var porcentajeTea=ref();
 var saldoFinal = ref(null);
-var periodoGracia = 'S';
+var periodoGracia = ref(null);
 var tasaInflacion = 0;
 var inflacionPeriodo = ref(0);
 const sumaCostesGastosIniciales = ref(0);
@@ -373,7 +393,7 @@ var arrayNcuotasActuales = [];
 const tirResultado = calcularTIR(flujosEfectivo);*/
 
 const tep2 = ref(0);
-const pSegDesPer = ref();
+const pSegDesPer = ref(0);
 const n = ref(0);
 const nc = ref(0);
 const sii = ref(0);
