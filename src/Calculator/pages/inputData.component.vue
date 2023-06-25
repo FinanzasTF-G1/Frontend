@@ -316,7 +316,6 @@
 
 <script setup>
 import {ref, onMounted} from "vue";
-//import {calculatorApiService} from "../services/calculator-api.service";
 import {CalculatorService} from "@/Calculator/services/CalculatorService";
 
 onMounted(() => {
