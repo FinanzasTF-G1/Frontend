@@ -30,6 +30,7 @@ import Dropdown from 'primevue/dropdown';
 import Calendar from 'primevue/calendar';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
+import SelectButton from 'primevue/selectbutton';
 
 const app = createApp(App)
 app.use(createPinia())
@@ -55,4 +56,5 @@ app.component('Dropdown', Dropdown);
 app.component('Calendar', Calendar);
 app.component('DataTable', DataTable);
 app.component('Column', Column);
+app.component('SelectButton', SelectButton);
 app.mount('#app')
