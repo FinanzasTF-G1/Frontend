@@ -106,13 +106,13 @@ function PAGO (tep, pSegDesPer, n, nc, sii)  {
 //para editar
 function Cuota (cuotaActual, nTotalDeCuotas, tep, pSegDesPer, periodoGracia, VsaldoInincialIndexado, V_TEP) {
     if (cuotaActual <= nTotalDeCuotas) {
-        //var vCuota=PAGO(tep,pSegDesPer,nTotalDeCuotas,cuotaActual,saldoInicialIndexado(cuotaActual))
+
         if (periodoGracia === 'T') {
             return 0;
         } else if (periodoGracia === 'P') {
             return fIntereses(VsaldoInincialIndexado, V_TEP);
-        } else {
-            return PAGO(tep,pSegDesPer,nTotalDeCuotas,cuotaActual,saldoInicialIndexado(cuotaActual));
+        } else if (periodoGracia === 'S'){
+            return PAGO(tep,pSegDesPer,nTotalDeCuotas,cuotaActual,VsaldoInincialIndexado);
         }
     }
 }

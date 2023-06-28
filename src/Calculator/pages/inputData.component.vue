@@ -270,7 +270,7 @@
     <label><label>Formula intereses </label>{{ fIntereses(saldoInicialIndexado(cuotaActual, 0, montoDelPrestamo, nTotalDeCuotas, cuotas), calcularTEP(cuotaActual, nTotalDeCuotas, tea, frec, diasPorAnio)) }}</label>
   </div>
   <div>
-    <label>Cuota {{ Cuota(cuotaActual, nTotalDeCuotas, tep, pSegDesPer, periodoGracia) }}</label>
+    <label>Cuota {{ Cuota(cuotaActual, nTotalDeCuotas, TEPn, porcentajeSeguroDesgravamen, periodoGracia, saldoInicialIndexado(cuotaActual, 0, montoDelPrestamo, nTotalDeCuotas, cuotas), calcularTEP(cuotaActual, nTotalDeCuotas, tea, frec, diasPorAnio)) }}</label>
   </div>
   <div>
     <label><label>Seguro de desgravamen </label>{{ seguroDeDesgravamen(cuotaActual, porcentajeSeguroDesgravamen) }}</label>
@@ -350,11 +350,11 @@ const vanDeLaOperacion = ref();
 var tea = ref();
 var porcentajeTea=ref();
 var saldoFinal = ref();
-var periodoGracia = ref();
+var periodoGracia = ref('S');
 var tasaInflacion = ref();
 var inflacionPeriodo = ref();
 var cuotaPagar = ref();
-const tep = ref();
+
 
 //Valores calculados:
 var saldoAfinanciar = 0;
