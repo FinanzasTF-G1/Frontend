@@ -54,8 +54,8 @@ function fIntereses(VsaldoInincialIndexado, V_TEP) {
     return n
 }
 
-function seguroDeDesgravamen(cuotaActual, porcentajeSeguroDesgravamen) {
-    return (saldoInicialIndexado(cuotaActual) * porcentajeSeguroDesgravamen) / 100;
+function seguroDeDesgravamen(vSaldoInicialIndexado, porcentajeSeguroDesgravamen) {
+    return (vSaldoInicialIndexado * porcentajeSeguroDesgravamen) / 100;
 }
 
 function seguroRiesgo (cuotaActual, nTotalDeCuotas, segRiesgoPer) {

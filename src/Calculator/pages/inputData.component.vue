@@ -273,7 +273,7 @@
     <label>Cuota {{ Cuota(cuotaActual, nTotalDeCuotas, TEPn, porcentajeSeguroDesgravamen, periodoGracia, saldoInicialIndexado(cuotaActual, 0, montoDelPrestamo, nTotalDeCuotas, cuotas), calcularTEP(cuotaActual, nTotalDeCuotas, tea, frec, diasPorAnio)) }}</label>
   </div>
   <div>
-    <label><label>Seguro de desgravamen </label>{{ seguroDeDesgravamen(cuotaActual, porcentajeSeguroDesgravamen) }}</label>
+    <label><label>Seguro de desgravamen </label>{{ seguroDeDesgravamen(saldoInicialIndexado(cuotaActual, 0, montoDelPrestamo, nTotalDeCuotas, cuotas), porcentajeSeguroDesgravamen) }}</label>
   </div>
   <div>
     <label><label>Seguro de riesgo </label>{{ seguroRiesgo(cuotaActual, nTotalDeCuotas, segRiesgoPer) }}</label>
@@ -375,7 +375,6 @@ var arrayNcuotasActuales = [];
 /*const varResultado = calcularVAR(flujosEfectivo, tasaDescuento);
 const tirResultado = calcularTIR(flujosEfectivo);*/
 
-const tep2 = ref();
 const pSegDesPer = ref();
 const n = ref();
 const nc = ref();
