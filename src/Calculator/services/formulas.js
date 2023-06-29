@@ -206,7 +206,7 @@ class Fila {
                 (Math.pow(1 + (this.TEA), (this.frec) / (this.diasPorAnio)) - 1) * 100
             );
         } else {
-            return -1;
+            return 0;
         }
     }
 
@@ -258,7 +258,7 @@ class Fila {
     }
 
     fInteres() {
-        return (-((this.fSaldoInicialIndexado() * this.fTEP()) / 100));
+        return -((this.fSaldoInicialIndexado() * this.fTEP()) / 100);
     }
 
     fCuota() {
@@ -279,7 +279,7 @@ class Fila {
             if (this.PG === 'T' || this.PG === 'P') {
                 return 0;
             } else {
-                return (-(this.fCuota() - this.fInteres() - this.fSeguroDeDesgravamen()));
+                return (this.fCuota() - this.fInteres() - this.fSeguroDeDesgravamen());
             }
         } else {
             return 0;
@@ -332,9 +332,9 @@ class Fila {
 
     fSaldoFinal() {
         if (this.PG === 'T') {
-            return this.fSaldoInicialIndexado() - this.fInteres();
+            return this.fSaldoInicialIndexado() -this.fInteres();
         } else {
-            return this.fSaldoInicialIndexado() - this.fAmortizacion() + this.prepago;
+            return (this.fSaldoInicialIndexado() + this.fAmortizacion() + this.prepago);
         }
     }
 

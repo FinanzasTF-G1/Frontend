@@ -260,7 +260,7 @@
           </Dropdown>
         </template>
         <template #body="slotProps">
-          <Tag :value="slotProps.data.inventoryStatus" :severity="getStatusLabel(slotProps.data.inventoryStatus)"/>
+          <Tag :value="slotProps.data.periodoGracia" :severity="getStatusLabel(slotProps.data.periodoGracia)"/>
         </template>
       </Column>
       <Column field="saldoInicial" header="Saldo Inicial"></Column>
@@ -284,71 +284,6 @@
       <Column :rowEditor="true" style="width: 10%; min-width: 8rem" bodyStyle="text-align:center"></Column>
     </DataTable>
 
-    <div class="flex justify-content-center mb-4"></div>
-    <DataTable :value="datos" tableStyle="min-width: 50rem">
-      <Column field="code" header="Code"></Column>
-      <Column field="name" header="Name"></Column>
-      <Column field="category" header="Category"></Column>
-      <Column field="quantity" header="Quantity"></Column>
-    </DataTable>
-  </div>
-
-  <div>
-    <label><label>Calcular tep </label>{{ calcularTEP(cuotaActual, nTotalDeCuotas, tea, frec, diasPorAnio) }}</label>
-  </div>
-  <div>
-    <label>Numero total de cuotas {{ nTotalDeCuotas }}</label>
-  </div>
-  <div>
-    <label><label>IP </label>{{ calcularIP(cuotaActual, nTotalDeCuotas, frec, diasPorAnio, 0) }}</label>
-  </div>
-  <div>
-    <label>Saldo 2: {{ saldoInicial(1, 94280, 180, cuotas) }}</label>
-  </div>
-  <div>
-    <label>Monto del prestamo </label><label>{{ montoDelPrestamo }}</label>
-  </div>
-  <div>
-    <label><label>Saldo inicial
-      Indexado </label>{{ saldoInicialIndexado(cuotaActual, 0, montoDelPrestamo, nTotalDeCuotas, cuotas) }}</label>
-  </div>
-  <div>
-    <label>TEPn {{ TEPn }}</label>
-  </div>
-  <div>
-    <label><label>Formula intereses </label>{{
-        fIntereses(saldoInicialIndexado(cuotaActual, 0, montoDelPrestamo, nTotalDeCuotas, cuotas), calcularTEP(cuotaActual, nTotalDeCuotas, tea, frec, diasPorAnio))
-      }}</label>
-  </div>
-  <div>
-    <label>Cuota {{
-        Cuota(cuotaActual, nTotalDeCuotas, TEPn, porcentajeSeguroDesgravamen, periodoGracia, saldoInicialIndexado(cuotaActual, 0, montoDelPrestamo, nTotalDeCuotas, cuotas), TEPn)
-      }}</label>
-  </div>
-  <div>
-    <label><label>Seguro de desgravamen </label>{{
-        seguroDeDesgravamen(saldoInicialIndexado(cuotaActual, 0, montoDelPrestamo, nTotalDeCuotas, cuotas), porcentajeSeguroDesgravamen)
-      }}</label>
-  </div>
-  <div>
-    <label><label>Seguro de riesgo </label>{{ seguroRiesgo(cuotaActual, nTotalDeCuotas, segRiesgoPer) }}</label>
-  </div>
-  <div>
-    <label><label>Comision </label>{{ comision(cuotaActual, nTotalDeCuotas, comisionPeriodica) }}</label>
-  </div>
-  <div>
-    <label><label>Portes </label>{{ calcularPortes(cuotaActual, nTotalDeCuotas, portes) }}</label>
-  </div>
-  <div>
-    <label><label>Gastos administrativos </label>{{
-        calcularGastosAdministracion(cuotaActual, nTotalDeCuotas, gastosAdministracion)
-      }}</label>
-  </div>
-  <div>
-    <label><label>Tasa efectiva anual </label>{{ tea }}</label>
-  </div>
-  <div>
-    <label>Acá debe estar el PAGO: {{PAGO(TEPn, segDesgravamenPer, nTotalDeCuotas, 1, saldoInicialIndexado(cuotaActual, 0, montoDelPrestamo, nTotalDeCuotas, cuotas))}}</label>
   </div>
 
 </template>
