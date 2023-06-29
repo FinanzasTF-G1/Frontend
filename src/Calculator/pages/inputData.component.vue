@@ -1,5 +1,5 @@
 <template>
-  <div class="grid pt-2 text-center" @click="calcularOnBu">
+  <div class="grid pt-2 text-center">
     <div class="card col-11">
       <h2>Método Francés Vencido - Ordinario</h2>
     </div>
@@ -236,80 +236,116 @@
       </div>
     </div>
   </div>
+    <div class="card">
+        <Button @click="calcularOnBu">Calcular</Button>
+        <Button @click.prevent="llenaTabla">Llena Tabla</Button>
+    </div>
   <div class="card">
     <!-- Sacamos el datatable ciela-->
-      <div class="flex justify-content-center mb-4"></div>
-      <DataTable :value="datos" tableStyle="min-width: 50rem">
-          <Column field="code" header="Code"></Column>
-          <Column field="name" header="Name"></Column>
-          <Column field="category" header="Category"></Column>
-          <Column field="quantity" header="Quantity"></Column>
-      </DataTable>
+    <div class="flex justify-content-center mb-4"></div>
+    <DataTable v-model:editingRows="editingRows" :value="datos" editMode="row" dataKey="id"
+               @row-edit-save="onRowEditSave" tableClass="editable-cells-table" tableStyle="min-width: 50rem">
+      <Column field="cuotaActual" header="N° Cuota"></Column>
+      <Column field="tea" header="TEA">
+        <template #editor="{ data, field }">
+          <InputText v-model="data[field]"/>
+        </template>
+      </Column>
+      <Column field="tep" header="TEP"></Column>
+      <Column field="ia" header="IA"></Column>
+      <Column field="ip" header="IP"></Column>
+      <Column field="periodoGracia" header="Periodo Gracia" style="width: 20%">
+        <template #editor="{ data, field }">
+          <Dropdown v-model="data[field]" :options="statuses" optionLabel="label" optionValue="value"
+                    placeholder="Seleccione una opción">
+            <template #option="slotProps">
+              <Tag :value="slotProps.option.value" :severity="getStatusLabel(slotProps.option.value)"/>
+            </template>
+          </Dropdown>
+        </template>
+        <template #body="slotProps">
+          <Tag :value="slotProps.data.periodoGracia" :severity="getStatusLabel(slotProps.data.periodoGracia)"/>
+        </template>
+      </Column>
+      <Column field="saldoInicial" header="Saldo Inicial"></Column>
+      <Column field="saldoInicialIndexado" header="Saldo Inicial Indexado"></Column>
+      <Column field="interes" header="Interés"></Column>
+      <Column field="pagoCuota" header="Cuota"></Column>
+      <Column field="amortizacion" header="Amortización"></Column>
+      <Column field="prepago" header="Prepago">
+        <template #editor="{ data, field }">
+          <InputText v-model="data[field]"/>
+        </template>
+      </Column>
+      <Column field="seguroDesgravamen" header="Seguro Desgravamen"></Column>
+      <Column field="seguroRiesgo" header="Seguro Riesgo"></Column>
+      <Column field="comision" header="Comisión"></Column>
+      <Column field="portes" header="Portes"></Column>
+      <Column field="gastosAdministrativos" header="Gastos Administrativos"></Column>
+      <Column field="saldoFinal" header="Saldo Final"></Column>
+      <Column field="flujo" header="Flujo"></Column>
+
+      <Column :rowEditor="true" style="width: 10%; min-width: 8rem" bodyStyle="text-align:center"></Column>
+    </DataTable>
 
   </div>
-  <table>
-    <thead>
-    <tr>
-      <th>Cuota</th>
-      <th>Saldo Inicial</th>
-      <th>Saldo Inicial Indexado</th>
-      <th>Intereses</th>
-      <th>Cuota</th>
-      <th>Seguro de Desgravamen</th>
-      <th>Seguro de Riesgo</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr v-for="cuota in cuotas" :key="cuota.numero">
-      <td>{{ cuota.numero }}</td>
-      <td>{{ saldoInicial(cuota.numero) }}</td>
-      <td>{{ saldoInicialIndexado(cuota.numero) }}</td>
-      <td>{{ fIntereses(cuota.numero) }}</td>
-      <td>{{ Cuota(cuota.numero) }}</td>
-      <td>{{ SeguroDeDesgravamen(cuota.numero) }}</td>
-      <td>{{ SeguroRiesgo(cuota.numero) }}</td>
-    </tr>
-    </tbody>
-  </table>
+
   <div>
-    <label><label>Calcular tep </label>{{ calcularTEP(1) }}</label>
+    <label><label>Calcular tep </label>{{ calcularTEP(cuotaActual, nTotalDeCuotas, tea, frec, diasPorAnio) }}</label>
   </div>
   <div>
-    <label><label>IP </label>{{ calcularIP(1, 0) }}</label>
+    <label>Numero total de cuotas {{ nTotalDeCuotas }}</label>
   </div>
   <div>
-    <label><label>Saldo inicial </label>{{ saldoInicial(1) }}</label>
+    <label><label>IP </label>{{ calcularIP(cuotaActual, nTotalDeCuotas, frec, diasPorAnio, 0) }}</label>
   </div>
   <div>
-    <label><label>Saldo inicial Indexado </label>{{ saldoInicialIndexado(1) }}</label>
+    <label>Saldo 2: {{ saldoInicial(1, 94280, 180, cuotas) }}</label>
   </div>
   <div>
-    <label><label>Formula intereses </label>{{ fIntereses(1) }}</label>
+    <label>Monto del prestamo </label><label>{{ montoDelPrestamo }}</label>
   </div>
   <div>
-    <label>Cuota {{ Cuota(1) }}</label>
+    <label><label>Saldo inicial
+      Indexado </label>{{ saldoInicialIndexado(cuotaActual, 0, montoDelPrestamo, nTotalDeCuotas, cuotas) }}</label>
   </div>
   <div>
-    <label><label>Seguro de desgravamen </label>{{ seguroDeDesgravamen(1) }}</label>
+    <label>TEPn {{ TEPn }}</label>
   </div>
   <div>
-    <label><label>Seguro de riesgo </label>{{ seguroRiesgo(1) }}</label>
+    <label><label>Formula intereses </label>{{
+        fIntereses(saldoInicialIndexado(cuotaActual, 0, montoDelPrestamo, nTotalDeCuotas, cuotas), calcularTEP(cuotaActual, nTotalDeCuotas, tea, frec, diasPorAnio))
+      }}</label>
   </div>
   <div>
-    <label><label>Comision </label>{{ comision(1) }}</label>
+    <label>Cuota {{
+        Cuota(cuotaActual, nTotalDeCuotas, TEPn, porcentajeSeguroDesgravamen, periodoGracia, saldoInicialIndexado(cuotaActual, 0, montoDelPrestamo, nTotalDeCuotas, cuotas), TEPn)
+      }}</label>
   </div>
   <div>
-    <label><label>Portes </label>{{ calcularPortes(1) }}</label>
+    <label><label>Seguro de desgravamen </label>{{
+        seguroDeDesgravamen(saldoInicialIndexado(cuotaActual, 0, montoDelPrestamo, nTotalDeCuotas, cuotas), porcentajeSeguroDesgravamen)
+      }}</label>
   </div>
   <div>
-    <label><label>Gastos administrativos </label>{{ calcularGastosAdministracion(1) }}</label>
+    <label><label>Seguro de riesgo </label>{{ seguroRiesgo(cuotaActual, nTotalDeCuotas, segRiesgoPer) }}</label>
+  </div>
+  <div>
+    <label><label>Comision </label>{{ comision(cuotaActual, nTotalDeCuotas, comisionPeriodica) }}</label>
+  </div>
+  <div>
+    <label><label>Portes </label>{{ calcularPortes(cuotaActual, nTotalDeCuotas, portes) }}</label>
+  </div>
+  <div>
+    <label><label>Gastos administrativos </label>{{
+        calcularGastosAdministracion(cuotaActual, nTotalDeCuotas, gastosAdministracion)
+      }}</label>
   </div>
   <div>
     <label><label>Tasa efectiva anual </label>{{ tea }}</label>
   </div>
   <div>
-    <label>Acá debe estar el PAGO: </label>
-    <label>{{ PAGO(0.79741, 0.050, 180, 13, 98881.70) }}</label>
+    <label>Acá debe estar el PAGO: {{PAGO(TEPn, segDesgravamenPer, nTotalDeCuotas, 1, saldoInicialIndexado(cuotaActual, 0, montoDelPrestamo, nTotalDeCuotas, cuotas))}}</label>
   </div>
 
 </template>
@@ -317,244 +353,224 @@
 <script setup>
 import {ref, onMounted} from "vue";
 import {CalculatorService} from "@/Calculator/services/CalculatorService";
+import axios from "axios";
+import {
+  calcularArrayNumeroCuotas, calcularArrayTeas, calcularTEP, saldoInicial, saldoInicialIndexado,
+  fIntereses, seguroDeDesgravamen, seguroRiesgo, comision, calcularPortes, calcularVAR, PAGO, Cuota,
+  calcularTIR, calcularIP, calcularGastosAdministracion, Fila
+} from "@/Calculator/services/formulas";
+
+var miCalculator = new CalculatorService();
 
 onMounted(() => {
-    CalculatorService.getData().then((data)=>(datos.value = data));
+    miCalculator.getData().then((data) => (datos.value = data));
 });
-/*
-const updatedProducts = CalculatorService.editData('1001', {
-    name: 'New Name',
-    price: 99,
-    inventoryStatus: 'LOWSTOCK'
-});*/
 
-CalculatorService.editData('1001', { price: 880 })
-    .then(updatedData => {
-        CalculatorService.totalData = updatedData;
-        console.log('Datos modificados:', updatedData);
-    })
-    .catch(error => {
-        console.error('Error al modificar los datos:', error);
-    });
+//datos de tabla de ejemplo
+const datos = ref();
 
+const editingRows = ref([]);
+const statuses = ref([
+  {label: 'Total', value: 'T'},
+  {label: 'Parcial', value: 'P'},
+  {label: 'Sin plazo de gracia', value: 'S'}
+]);
+const onRowEditSave = (event) => {
+  let {newData, index} = event;
 
-const datos=ref();
-const operacion = ref();
-var precioVenta = ref();
-var cuotaInicial = ref(null);
-const nAnios = ref(null);
-const frec = ref(null);
-const diasPorAnio = ref(null);
+  datos.value[index] = newData;
+};
+const getStatusLabel = (status) => {
+  switch (status) {
+    case 'T':
+      return 'success';
 
-const saldoAfinanciar = ref(0);
+    case 'P':
+      return 'warning';
 
-const montoDelPrestamo = ref(0);
-var nCuotasPorAnio = ref(null);
-var nTotalDeCuotas = ref(null);
-const costesNotariales = ref(null);
-const costesRegistrales = ref(null);
-const tasacion = ref(null);
-const comisionDeEstudio = ref(null);
-const comisionActivacion = ref(null);
-var segDesgravamenPer = ref(null);
-var segRiesgoPer = ref(null);
-const comisionPeriodica = ref(null);
-const portes = ref(null);
-const gastosAdministracion = ref(null);
-const porcentajeSeguroDesgravamen = ref(null);
-const porcentajeSeguroRiesgo = ref(null);
-const intereses = ref(null);
-const amortCapital = ref(null);
-const seguroDesgravamen = ref(null);
-const segContraTodoRiesgo = ref(null);
-const comisionesPeriodicas = ref(null);
-const portesGastosAdministracion = ref(null);
-const cok = ref(null);
-var tasaDeDescuento = ref(null);
-const tirDeLaOperacion = ref(null);
-var tceaDeLaOperacion = ref(null);
-const vanDeLaOperacion = ref(null);
-var cuotaActual = 0;
+    case 'S':
+      return 'danger';
+
+    default:
+      return null;
+  }
+};
+
+// Valores ingresados - Inputs
+
+// Datos del prestamo
+
+const precioVenta = ref();
+const cuotaInicial = ref();
+const nAnios = ref();
+const frec = ref();
+const diasPorAnio = ref();
 var tea = ref();
-var porcentajeTea=ref();
-var saldoFinal = ref(null);
-var periodoGracia = ref(null);
-var tasaInflacion = 0;
-var inflacionPeriodo = ref(0);
-const sumaCostesGastosIniciales = ref(0);
-var cuotaPagar = ref(0.0);
-const tep = ref();
 
-var arrayTEAs = [];
-var arrayNcuotasActuales = [];
+// Datos de los costes/gastos iniciales
+const costesNotariales = ref();
+const costesRegistrales = ref();
+const tasacion = ref();
+const comisionDeEstudio = ref();
+const comisionActivacion = ref(0);
 
+// Datos de los costes/gastos periódicos
+const comisionPeriodica = ref(0);
+const portes = ref();
+const gastosAdministracion = ref();
+const porcentajeSeguroDesgravamen = ref();
+const porcentajeSeguroRiesgo = ref();
+
+// Datos del costo de oportunidad
+const cok = ref();
+
+// Resultados calculados - Outputs
+
+// Resultados del financiamiento
+var saldoAfinanciar = 0;
+var montoDelPrestamo = 0;
+var nCuotasPorAnio = 0;
+var nTotalDeCuotas = 0;
+
+
+// Resultado de los costes/gastos periodicos
+var segDesgravamenPer = 0;
+var segRiesgoPer = 0;
+
+// Resultado totales por...
+const intereses = ref();
+const amortCapital = ref();
+const seguroDesgravamen = ref();
+const segContraTodoRiesgo = ref();
+const comisionesPeriodicas = ref();
+const portesGastosAdministracion = ref();
+
+// Resultado de indicadores de Rentabilidad
+var tasaDeDescuento = 0;
+const tirDeLaOperacion = ref();
+var tceaDeLaOperacion = 0;
+const vanDeLaOperacion = ref();
+
+// Datos modificables pertenecientes a la tabla ya generada
+var porcentajeTea = ref();
+var periodoGracia = ref('S');
+
+// Sumatoria de los datos de los costes/gastos iniciales:
+var sumaCostesGastosIniciales = 0;
+
+// Otras variables
+
+var cuotaActual = 1;
+var TEPn = 0
+var cuotas = ref([]);
 
 /*const varResultado = calcularVAR(flujosEfectivo, tasaDescuento);
 const tirResultado = calcularTIR(flujosEfectivo);*/
 
-const tep2 = ref(0);
-const pSegDesPer = ref(0);
-const n = ref(0);
-const nc = ref(0);
-const sii = ref(0);
 
-var value1 = 1;
-var value2 = 10;
-const cuotas = ref([]);
-const calcularOnBu = () => {
-  saldoAfinanciar.value = precioVenta.value - (cuotaInicial.value / 100) * precioVenta.value;
-  sumaCostesGastosIniciales.value = costesNotariales.value + costesRegistrales.value + tasacion.value + comisionDeEstudio.value + comisionActivacion.value;
-  montoDelPrestamo.value = saldoAfinanciar.value + sumaCostesGastosIniciales.value;
-  nCuotasPorAnio.value = diasPorAnio.value / frec.value;
-  nTotalDeCuotas.value = nCuotasPorAnio.value * nAnios.value;
-  segDesgravamenPer.value = (porcentajeSeguroDesgravamen.value / 30) * frec.value;
-  segRiesgoPer.value = (porcentajeSeguroRiesgo.value / 100) * precioVenta.value / nCuotasPorAnio.value;
-  tasaDeDescuento.value = ((Math.pow((1 + (cok.value / 100)), (frec.value / diasPorAnio.value)) - 1) * 100).toFixed(5);
-  //cuotaPagar.value =
-  //PAGO(0.94888, 0.050, 180, 61, 83092.89);
-  //PAGO(tep2.value, pSegDesPer.value, n.value, nc.value, sii.value);
-  //calcularTEP(parseFloat(cuotaActual.value), parseFloat(tea.value));
+
+
+// Resultados de los calculos realizados en esta vista de VUE
+var calcularOnBu = () => {
+  saldoAfinanciar = precioVenta.value - (cuotaInicial.value / 100) * precioVenta.value;
+  sumaCostesGastosIniciales = costesNotariales.value + costesRegistrales.value + tasacion.value + comisionDeEstudio.value + comisionActivacion.value;
+  montoDelPrestamo = saldoAfinanciar + sumaCostesGastosIniciales;
+  nCuotasPorAnio = diasPorAnio.value / frec.value;
+  nTotalDeCuotas = nCuotasPorAnio * nAnios.value;
+  segDesgravamenPer = (porcentajeSeguroDesgravamen.value / 30) * frec.value;
+  segRiesgoPer = (porcentajeSeguroRiesgo.value / 100) * precioVenta.value / nCuotasPorAnio;
+  tasaDeDescuento = ((Math.pow((1 + (cok.value / 100)), (frec.value / diasPorAnio.value)) - 1) * 100).toFixed(5);
+  TEPn = calcularTEP(cuotaActual, nTotalDeCuotas, tea.value, frec.value, diasPorAnio.value);
   calcularArrayTeas();
   calcularArrayNumeroCuotas();
   tea.value = porcentajeTea.value / 100;
-}
+  tceaDeLaOperacion = Math.pow((1 + tirDeLaOperacion), (diasPorAnio / frec)) - 1;
+  var miFila = new Fila(1, nTotalDeCuotas, montoDelPrestamo, tea.value, frec.value, diasPorAnio.value, cuotaInicial.value, precioVenta.value, porcentajeSeguroDesgravamen.value, segRiesgoPer, comisionPeriodica.value, portes.value, gastosAdministracion.value, 0);
+  console.log(miFila.fTEP(), miFila.fIA(), miFila.fIP(), miFila.fPG(), miFila.fSaldoInicial(), miFila.fSaldoInicialIndexado(), miFila.fInteres(), miFila.fCuota(), miFila.fAmortizacion(), miFila.fPP(), miFila.fSeguroDeDesgravamen(), miFila.fSeguroRiesgo(), miFila.fComision(), miFila.fPortes(), miFila.fGastosAdministracion(), miFila.fSaldoFinal(), miFila.fFlujo());
+    var auxSaldoFAnt = cuotaInicial.value;
+    for (var i = 0; i <= 3; i++) {
+        var miFila2 = new Fila(i, nTotalDeCuotas, montoDelPrestamo, tea.value, frec.value, diasPorAnio.value, auxSaldoFAnt, precioVenta.value, porcentajeSeguroDesgravamen.value, segRiesgoPer, comisionPeriodica.value, portes.value, gastosAdministracion.value, 0);
+        auxSaldoFAnt = miFila2.fSaldoFinal();
 
-const calcularArrayNumeroCuotas = () => {
-  for (var i = 0; i <= nTotalDeCuotas.value; i++) {
-    arrayNcuotasActuales.push(i);
-  }
-}
-
-const calcularArrayTeas = () => {
-  for (var i = 0; i <= nTotalDeCuotas.value; i++) {
-    arrayTEAs.push(tea);
-  }
-}
-
-const calcularTEP = (cuotaActual) => {
-  if (cuotaActual <= parseFloat(nTotalDeCuotas.value)) {
-    return (
-        (Math.pow(1 + tea.value, parseFloat(frec.value) / parseFloat(diasPorAnio.value)) - 1) * 100
-    );
-  } else {
-    return -1;
-  }
-}
-
-const calcularIP = (cuotaActual, ia) => {
-  if (cuotaActual <= parseFloat(nTotalDeCuotas.value)) {
-    return (
-        (Math.pow(1 + ia, parseFloat(frec.value) / parseFloat(diasPorAnio.value)) - 1) * 100
-    );
-  } else {
-    return 0;
-  }
-}
-
-const saldoInicial = (cuotaActual) => {
-  if (cuotaActual === 1) {
-    return montoDelPrestamo.value;
-  } else if (cuotaActual <= nTotalDeCuotas.value) {
-    return cuotas.value[cuotaActual - 1].saldoFinal;
-  } else {
-    return 0;
-  }
-};
-
-const saldoInicialIndexado = (cuotaActual) => {
-  return saldoInicial(cuotaActual) + saldoInicial(cuotaActual) * inflacionPeriodo.value;
-};
-
-const fIntereses = (cuotaActual) => {
-  return (saldoInicialIndexado(cuotaActual) * calcularTEP(cuotaActual)) / 100;
-};
-
-const seguroDeDesgravamen = (cuotaActual) => {
-  return (saldoInicialIndexado(cuotaActual) * porcentajeSeguroDesgravamen.value) / 100;
-};
-
-const seguroRiesgo = (cuotaActual) => {
-  if (cuotaActual <= nTotalDeCuotas.value) {
-    return -segRiesgoPer.value;
-  } else {
-    return 0;
-  }
-};
-
-const comision = (cuotaActual) => {
-  if (cuotaActual <= nTotalDeCuotas.value) {
-    return -comisionPeriodica.value;
-  } else {
-    return 0;
-  }
-}
-
-const calcularPortes = (cuotaActual) => {
-  if (cuotaActual <= nTotalDeCuotas.value) {
-    return -portes.value;
-  } else {
-    return 0;
-  }
-}
-
-const calcularGastosAdministracion = (cuotaActual) => {
-  if (cuotaActual <= nTotalDeCuotas.value) {
-    return -gastosAdministracion.value;
-  } else {
-    return 0;
-  }
-}
-
-const PAGO = (tep, pSegDesPer, n, nc, sii) => {
-
-  var tasa = tep + pSegDesPer;
-  var nper = n - nc + 1;
-  var va = sii;
-
-  if (!isNaN(tasa)) {
-    tasa = tasa / 100;
-  }
-
-  return -((tasa * (Math.pow(1 + tasa, nper)) * va) / ((Math.pow(1 + tasa, nper) - 1)));
-}
-
-const Cuota = (cuotaActual) => {
-  if (cuotaActual <= nTotalDeCuotas.value) {
-    var vCuota=PAGO(tep.value,pSegDesPer.value,nTotalDeCuotas,cuotaActual,saldoInicialIndexado(cuotaActual))
-    if (periodoGracia === 'T') {
-      return 0;
-    } else if (periodoGracia === 'P') {
-      return fIntereses(cuotaActual);
-    } else {
-      return PAGO(vCuota.value,pSegDesPer.value,nTotalDeCuotas.value,cuotaActual,saldoInicialIndexado(cuotaActual));
+        miCalculator.addData({
+            cuotaActual: i,
+            tea: tea.value,
+            tep: miFila2.fTEP(),
+            ia: miFila2.fIA(),
+            ip: miFila2.fIP(),
+            periodoGracia: miFila2.fPG(),
+            saldoInicial: miFila2.fSaldoInicial(),
+            saldoInicialIndexado: miFila2.fSaldoInicialIndexado(),
+            interes: miFila2.fInteres(),
+            pagoCuota: miFila2.fCuota(),
+            amortizacion: miFila2.fAmortizacion(),
+            prepago: miFila2.fPP(),
+            seguroDesgravamen: miFila2.fSeguroDeDesgravamen(),
+            seguroRiesgo: miFila2.fSeguroRiesgo(),
+            comision: miFila2.fComision(),
+            portes: miFila2.fPortes(),
+            gastosAdministrativos: miFila2.fGastosAdministracion(),
+            saldoFinal: miFila2.fSaldoFinal(),
+            flujo: miFila2.fFlujo()
+        })
     }
-  }
-}
+};
 
-/*const calcularSaldoFinal = (cuotaActual) => {
+var llenaTabla= async()=>{
 
-  function saldoInicial() {
-    if (cuotaActual === 1) {
-      return montoDelPrestamo;
-    } else {
-      if (cuotaActual <= nTotalDeCuotas) {
-        return saldoFinal;
-      } else return 0;
+    for (var i = 0; i <= 3; i++) {
+        var miFila2 = new Fila(i, nTotalDeCuotas, montoDelPrestamo, tea.value, frec.value, diasPorAnio.value, auxSaldoFAnt, precioVenta.value, porcentajeSeguroDesgravamen.value, segRiesgoPer, comisionPeriodica.value, portes.value, gastosAdministracion.value, 0);
+        //auxSaldoFAnt = miFila2.fSaldoFinal();
+
+        /*
+        miCalculator.addData({
+            cuotaActual: i,
+            tea: tea.value,
+            tep: miFila2.fTEP(),
+            ia: miFila2.fIA(),
+            ip: miFila2.fIP(),
+            periodoGracia: miFila2.fPG(),
+            saldoInicial: miFila2.fSaldoInicial(),
+            saldoInicialIndexado: miFila2.fSaldoInicialIndexado(),
+            interes: miFila2.fInteres(),
+            pagoCuota: miFila2.fCuota(),
+            amortizacion: miFila2.fAmortizacion(),
+            prepago: miFila2.fPP(),
+            seguroDesgravamen: miFila2.fSeguroDeDesgravamen(),
+            seguroRiesgo: miFila2.fSeguroRiesgo(),
+            comision: miFila2.fComision(),
+            portes: miFila2.fPortes(),
+            gastosAdministrativos: miFila2.fGastosAdministracion(),
+            saldoFinal: miFila2.fSaldoFinal(),
+            flujo: miFila2.fFlujo()
+        })*/
+        const cuotaT ={
+            cuotaActual: i,
+            tea: tea.value,
+            tep: miFila2.fTEP(),
+            ia: miFila2.fIA(),
+            ip: miFila2.fIP(),
+            periodoGracia: miFila2.fPG(),
+            saldoInicial: miFila2.fSaldoInicial(),
+            saldoInicialIndexado: miFila2.fSaldoInicialIndexado(),
+            interes: miFila2.fInteres(),
+            pagoCuota: miFila2.fCuota(),
+            amortizacion: miFila2.fAmortizacion(),
+            prepago: miFila2.fPP(),
+            seguroDesgravamen: miFila2.fSeguroDeDesgravamen(),
+            seguroRiesgo: miFila2.fSeguroRiesgo(),
+            comision: miFila2.fComision(),
+            portes: miFila2.fPortes(),
+            gastosAdministrativos: miFila2.fGastosAdministracion(),
+            saldoFinal: miFila2.fSaldoFinal(),
+            flujo: miFila2.fFlujo()
+        };
+        const response = await axios.post('http://localhost:3000/api/v1/cuotas', cuotaT);
+        console.log(response);
     }
-  }
-
-  function Cuota() {
-    if (cuotaActual <= nTotalDeCuotas) {
-      if (periodoGracia === 'T') {
-        return 0;
-      } else {
-        if (periodoGracia === 'P') {
-          return fIntereses();
-        }
-      }
-    }
-  }
 }
+/*
+
 /!*-----------------------------comentario-------------------*!/
 
 
@@ -603,8 +619,6 @@ console.log("VAR:", varResultado);
 console.log("TIR:", tirResultado);
 
 */
-
-// Llamar a la función para calcular la tabla cuando sea necesario
 
 </script>
 

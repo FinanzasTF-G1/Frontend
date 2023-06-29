@@ -1,22 +1,33 @@
-export const CalculatorService = {
-    getTotalData() {
-        return [
+export class CalculatorService {
+    getTotalData = [
             {
-                id: '1000',
-                code: 'f230fh0g3',
-                name: 'Bamboo Watch',
-                description: 'Product Description',
-                image: 'bamboo-watch.jpg',
-                price: 65,
-                category: 'Accessories',
-                quantity: 24,
+                cuotaActual: '1000',
+                tea: 'f230fh0g3',
+                tep: 'Bamboo Watch',
+                ia: 'Product Description',
+                ip: 'bamboo-watch.jpg',
+                periodoGracia: 'TOTAL',
+                saldoInicial: 26,
+                saldoInicialIndexado: 24,
                 inventoryStatus: 'INSTOCK',
-                rating: 5
+                interes: 5,
+                pagoCuota: 655,
+                amortizacion: 412,
+                prepago: 312,
+                seguroDesgravamen: 23,
+                SeguroDesgravamen: 23,
+                seguroRiesgo: 234,
+                comision: 56,
+                portes: 23,
+                gastosAdministrativos: 213,
+                saldoFinal: 45,
+                flujo: 236
             },
             {
                 id: '1001',
                 code: 'nvklal433',
                 name: 'Black Watch',
+                periodoGracia: 'TOTAL',
                 description: 'Product Description',
                 image: 'black-watch.jpg',
                 price: 72,
@@ -48,53 +59,13 @@ export const CalculatorService = {
                 quantity: 25,
                 inventoryStatus: 'INSTOCK',
                 rating: 5
-            },
-            {
-                id: '1004',
-                code: 'h456wer53',
-                name: 'Bracelet',
-                description: 'Product Description',
-                image: 'bracelet.jpg',
-                price: 15,
-                category: 'Accessories',
-                quantity: 73,
-                inventoryStatus: 'INSTOCK',
-                rating: 4
             }
-        ];
-    },
 
+        ]
+    addData(newData) {
+        this.getTotalData.push(newData);
+    }
     getData() {
-        return Promise.resolve(this.getTotalData());
-    },
-
-    editData2(id, newData) {
-        const productsData = this.getTotalData();
-        const productIndex = productsData.findIndex((product) => product.id === id);
-        let updatedProduct;
-
-        if (productIndex !== -1) {
-            // Found the product with the specified ID
-            updatedProduct = { ...productsData[productIndex], ...newData };
-            productsData[productIndex] = updatedProduct;
-        }
-
-        return productsData;
-    },
-
-    editData(id, newData) {
-        return new Promise((resolve, reject) => {
-            const productsData = this.getTotalData();
-            const productIndex = productsData.findIndex((product) => product.id === id);
-
-            if (productIndex !== -1) {
-                // Found the product with the specified ID
-                const updatedProduct = { ...productsData[productIndex], ...newData };
-                productsData[productIndex] = updatedProduct;
-                resolve(productsData);
-            } else {
-                reject(new Error(`Product with ID ${id} not found.`));
-            }
-        });
+        return Promise.resolve(this.getTotalData);
     }
 };
