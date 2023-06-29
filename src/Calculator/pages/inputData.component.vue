@@ -303,7 +303,7 @@
   </div>
   <div>
     <label>Cuota {{
-        Cuota(cuotaActual, nTotalDeCuotas, TEPn, porcentajeSeguroDesgravamen, periodoGracia, saldoInicialIndexado(cuotaActual, 0, montoDelPrestamo, nTotalDeCuotas, cuotas), calcularTEP(cuotaActual, nTotalDeCuotas, tea, frec, diasPorAnio))
+        Cuota(cuotaActual, nTotalDeCuotas, TEPn, porcentajeSeguroDesgravamen, periodoGracia, saldoInicialIndexado(cuotaActual, 0, montoDelPrestamo, nTotalDeCuotas, cuotas), TEPn)
       }}</label>
   </div>
   <div>
@@ -329,8 +329,7 @@
     <label><label>Tasa efectiva anual </label>{{ tea }}</label>
   </div>
   <div>
-    <label>Acá debe estar el PAGO: </label>
-    <label>{{ PAGO(0.79741, 0.050, 180, 13, 98881.70) }}</label>
+    <label>Acá debe estar el PAGO: {{PAGO(TEPn, segDesgravamenPer, nTotalDeCuotas, 1, saldoInicialIndexado(cuotaActual, 0, montoDelPrestamo, nTotalDeCuotas, cuotas))}}</label>
   </div>
 
 </template>
@@ -403,10 +402,10 @@ const costesNotariales = ref();
 const costesRegistrales = ref();
 const tasacion = ref();
 const comisionDeEstudio = ref();
-const comisionActivacion = ref();
+const comisionActivacion = ref(0);
 
 // Datos de los costes/gastos periódicos
-const comisionPeriodica = ref();
+const comisionPeriodica = ref(0);
 const portes = ref();
 const gastosAdministracion = ref();
 const porcentajeSeguroDesgravamen = ref();
@@ -471,7 +470,7 @@ const calcularOnBu = () => {
   segDesgravamenPer = (porcentajeSeguroDesgravamen.value / 30) * frec.value;
   segRiesgoPer = (porcentajeSeguroRiesgo.value / 100) * precioVenta.value / nCuotasPorAnio;
   tasaDeDescuento = ((Math.pow((1 + (cok.value / 100)), (frec.value / diasPorAnio.value)) - 1) * 100).toFixed(5);
-  TEPn = calcularTEP(cuotaActual, nTotalDeCuotas, tea.value, frec.value, diasPorAnio.value)
+  TEPn = calcularTEP(cuotaActual, nTotalDeCuotas, tea.value, frec.value, diasPorAnio.value);
   calcularArrayTeas();
   calcularArrayNumeroCuotas();
   tea.value = porcentajeTea.value / 100;

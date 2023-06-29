@@ -93,15 +93,16 @@ function calcularGastosAdministracion(cuotaActual, nTotalDeCuotas, gastosAdminis
 
 function PAGO(tep, pSegDesPer, n, nc, sii) {
 
-    var tasa = tep + pSegDesPer;
-    var nper = n - nc + 1;
-    var va = sii;
+    console.log(tep, pSegDesPer, n, nc, sii)
+    var tasa = parseFloat(tep) + parseFloat(pSegDesPer);
+    var nper = parseFloat(n) - parseFloat(nc) + 1;
+    var va = parseFloat(sii);
 
-    if (!isNaN(tasa)) {
-        tasa = tasa / 100;
-    }
 
-    return -((tasa * (Math.pow(1 + tasa, nper)) * va) / ((Math.pow(1 + tasa, nper) - 1)));
+    tasa = tasa / 100;
+
+    var m= -((tasa * (Math.pow(1 + tasa, nper)) * va) / (Math.pow(1 + tasa, nper) - 1))
+    return m;
 }
 
 //para editar
@@ -146,34 +147,43 @@ function calcularTIR(flujosEfectivo) {
     return tasaMedia;
 }
 
-const fila = {
-    numeroCuota: 0,
-    tea: '',
-    tep: '',
-    ia: '',
-    ip: '',
-    pg: '',
-    saldoInicial: '',
-    saldoInicialIndexado: '',
-    interes: '',
-    cuota: '',
-    amortizacion: '',
-    seguroDesgravamen: '',
-    seguroRiesgo: '',
-    comision: '',
-    portes: '',
-    gastosAdministrativos: '',
-    saldoFinal: '',
-    flujo: ''
-}
-
-class fila_f {
-    constructor(cuotaActual) {
+class Fila {
+    constructor(cuotaActual, nTotalDeCuotas, TEA, frec, diasPorAnio) {
         this.cuotaActual = cuotaActual;
+        this.nTotalDeCuotas = nTotalDeCuotas;
+        this.TEA = TEA;
+        this.frec = frec;
+        this.diasPorAnio = diasPorAnio;
+        this.IA=0.0;
     }
+
+    fTEP() {
+        if (this.cuotaActual <= (this.nTotalDeCuotas)) {
+            return (
+                (Math.pow(1 + (this.TEA), (this.frec) / (this.diasPorAnio)) - 1) * 100
+            );
+        } else {
+            return -1;
+        }
+    }
+
+    fIA(){
+        this.IA=0.0;
+        return this.IA;
+    }
+    fIP() {
+        if ((this.cuotaActual) <= (this.nTotalDeCuotas)) {
+            return (
+                ((Math.pow(1 + this.IA, (this.frec) / (this.diasPorAnio)) - 1) * 100)
+            )
+        } else {
+            return 0;
+        }
+    }
+
 }
 
-const instancia = new fila_f(1);
+const miFila_1 = new fila(1);
 
 
 /*
