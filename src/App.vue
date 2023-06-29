@@ -8,6 +8,6 @@
 
 <style>
 html {
-  background-color: #443988;
+  background-color: #00b347;
 }
 </style>

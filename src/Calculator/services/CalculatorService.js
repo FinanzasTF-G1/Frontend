@@ -1,6 +1,5 @@
-export const CalculatorService = {
-    getTotalData() {
-        return [
+export class CalculatorService {
+    getTotalData = [
             {
                 cuotaActual: '1000',
                 tea: 'f230fh0g3',
@@ -60,53 +59,13 @@ export const CalculatorService = {
                 quantity: 25,
                 inventoryStatus: 'INSTOCK',
                 rating: 5
-            },
-            {
-                id: '1004',
-                code: 'h456wer53',
-                name: 'Bracelet',
-                description: 'Product Description',
-                image: 'bracelet.jpg',
-                price: 15,
-                category: 'Accessories',
-                quantity: 73,
-                inventoryStatus: 'INSTOCK',
-                rating: 4
             }
-        ];
-    },
 
+        ]
+    addData(newData) {
+        this.getTotalData.push(newData);
+    }
     getData() {
-        return Promise.resolve(this.getTotalData());
-    },
-
-    editData2(id, newData) {
-        const productsData = this.getTotalData();
-        const productIndex = productsData.findIndex((product) => product.id === id);
-        let updatedProduct;
-
-        if (productIndex !== -1) {
-            // Found the product with the specified ID
-            updatedProduct = {...productsData[productIndex], ...newData};
-            productsData[productIndex] = updatedProduct;
-        }
-
-        return productsData;
-    },
-
-    editData(id, newData) {
-        return new Promise((resolve, reject) => {
-            const productsData = this.getTotalData();
-            const productIndex = productsData.findIndex((product) => product.id === id);
-
-            if (productIndex !== -1) {
-                // Found the product with the specified ID
-                const updatedProduct = {...productsData[productIndex], ...newData};
-                productsData[productIndex] = updatedProduct;
-                resolve(productsData);
-            } else {
-                reject(new Error(`Product with ID ${id} not found.`));
-            }
-        });
+        return Promise.resolve(this.getTotalData);
     }
 };
