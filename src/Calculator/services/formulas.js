@@ -30,7 +30,7 @@ function calcularIP (cuotaActual, nTotalDeCuotas, frec, diasPorAnio, ia) {
             ((Math.pow(1 + ia, (frec) / (diasPorAnio)) - 1) * 100)
         )
     } else {
-        return -100;
+        return 0;
     }
 }
 //en desarrollo
@@ -144,6 +144,39 @@ function calcularTIR(flujosEfectivo) {
 
     return tasaMedia;
 }
+
+const fila={
+    numeroCuota: 0,
+    tea: '',
+    tep: '',
+    ia: '',
+    ip: '',
+    pg: '',
+    saldoInicial: '',
+    saldoInicialIndexado: '',
+    interes: '',
+    cuota: '',
+    amortizacion: '',
+    seguroDesgravamen: '',
+    seguroRiesgo: '',
+    comision: '',
+    portes: '',
+    gastosAdministrativos: '',
+    saldoFinal: '',
+    flujo: ''
+}
+
+class fila_f{
+    constructor(cuotaActual) {
+        this.cuotaActual=cuotaActual;
+    }
+}
+
+const instancia=new fila_f(1);
+
+
+
+
 /*
 function Cuota(cuotaActual, nTotalDeCuotas, periodoGracia) {
     if (cuotaActual <= nTotalDeCuotas) {
@@ -160,4 +193,4 @@ function Cuota(cuotaActual, nTotalDeCuotas, periodoGracia) {
 
 export {calcularArrayNumeroCuotas, calcularArrayTeas, calcularTEP, saldoInicial, saldoInicialIndexado,
     fIntereses, seguroDeDesgravamen, seguroRiesgo, comision, calcularPortes, calcularVAR, PAGO, Cuota,
-    calcularTIR, calcularIP, calcularGastosAdministracion}
+    calcularTIR, calcularIP, calcularGastosAdministracion, instancia}

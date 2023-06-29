@@ -10,12 +10,12 @@
                     <div class="p-fluid">
                         <div v-focustrap class="card">
                             <div class="field">
-                                <InputText id="input" v-model="name" type="text" placeholder="Nombre" autofocus />
+                                <InputText id="input" v-model="name" type="text" placeholder="Nombre" autofocus required/>
                             </div>
                             <div class="field">
                                 <div class="p-input-icon-right">
                                     <i class="pi pi-envelope" />
-                                    <InputText id="email" v-model="email" type="email" placeholder="Email" />
+                                    <InputText id="email" v-model="email" type="email" placeholder="Email" required/>
                                 </div>
                             </div>
                             <div class="field">
@@ -39,7 +39,7 @@
                                 </div>
                             </div>
                             <div class="field-checkbox">
-                                <Checkbox id="accept" v-model="accept" name="accept" value="Accept" />
+                                <Checkbox id="accept" v-model="accept" name="accept" value="Accept"/>
                                 <label for="accept">Estoy de acuerdo con los términos y condiciones*</label>
                             </div>
                             <!--
@@ -47,16 +47,14 @@
                                 <Button type="submit" label="Regístrate" class="mt-2" />
                             </router-link>
                             -->
+                          <router-link to="/home">
                             <Button type="submit" label="Regístrate" class="mt-2" />
-
+                          </router-link>
                         </div>
                     </div>
                 </form>
-
             </template>
-
         </Card>
-
     </div>
 </template>
 
