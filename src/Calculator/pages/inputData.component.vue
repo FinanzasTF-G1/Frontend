@@ -1,6 +1,6 @@
 <template>
   <div class="grid pt-2 text-center" @click="calcularOnBu">
-    <div class="card col-10">
+    <div class="card col-11">
       <h2>Método Francés Vencido - Ordinario</h2>
     </div>
     <div class="card col-5">
@@ -238,6 +238,31 @@
   </div>
   <div class="card">
     <!-- Sacamos el datatable ciela-->
+      <div class="flex justify-content-center mb-4"></div>
+      <DataTable v-model:editingRows="editingRows" :value="datos" editMode="row" dataKey="id" @row-edit-save="onRowEditSave" tableClass="editable-cells-table" tableStyle="min-width: 50rem">
+          <Column field="code" header="Code"></Column>
+          <Column field="name" header="Name">
+              <template #editor="{ data, field }">
+                  <InputText v-model="data[field]" />
+              </template>
+          </Column>
+          <Column field="category" header="Category"></Column>
+          <Column field="inventoryStatus" header="Status" style="width: 20%">
+              <template #editor="{ data, field }">
+                  <Dropdown v-model="data[field]" :options="statuses" optionLabel="label" optionValue="value" placeholder="Select a Status">
+                      <template #option="slotProps">
+                          <Tag :value="slotProps.option.value" :severity="getStatusLabel(slotProps.option.value)" />
+                      </template>
+                  </Dropdown>
+              </template>
+              <template #body="slotProps">
+                  <Tag :value="slotProps.data.inventoryStatus" :severity="getStatusLabel(slotProps.data.inventoryStatus)" />
+              </template>
+          </Column>
+          <Column field="quantity" header="Quantity"></Column>
+          <Column :rowEditor="true" style="width: 10%; min-width: 8rem" bodyStyle="text-align:center"></Column>
+      </DataTable>
+
     <div class="flex justify-content-center mb-4"></div>
     <DataTable :value="datos" tableStyle="min-width: 50rem">
       <Column field="code" header="Code"></Column>
@@ -336,6 +361,34 @@ const datos = ref();
 // Valores ingresados - Inputs
 
 // Datos del prestamo
+const datos=ref();
+const editingRows = ref([]);
+const statuses = ref([
+    { label: 'In Stock', value: 'INSTOCK' },
+    { label: 'Low Stock', value: 'LOWSTOCK' },
+    { label: 'Out of Stock', value: 'OUTOFSTOCK' }
+]);
+const onRowEditSave = (event) => {
+    let { newData, index } = event;
+
+    datos.value[index] = newData;
+};
+const getStatusLabel = (status) => {
+    switch (status) {
+        case 'INSTOCK':
+            return 'success';
+
+        case 'LOWSTOCK':
+            return 'warning';
+
+        case 'OUTOFSTOCK':
+            return 'danger';
+
+        default:
+            return null;
+    }
+};
+const operacion = ref();
 const precioVenta = ref();
 const cuotaInicial = ref();
 const nAnios = ref();
