@@ -203,5 +203,5 @@ function Cuota(cuotaActual, nTotalDeCuotas, periodoGracia) {
 export {
     calcularArrayNumeroCuotas, calcularArrayTeas, calcularTEP, saldoInicial, saldoInicialIndexado,
     fIntereses, seguroDeDesgravamen, seguroRiesgo, comision, calcularPortes, calcularVAR, PAGO, Cuota,
-    calcularTIR, calcularIP, calcularGastosAdministracion, instancia
+    calcularTIR, calcularIP, calcularGastosAdministracion
 }
