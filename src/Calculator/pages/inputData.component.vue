@@ -241,17 +241,19 @@
     <div class="flex justify-content-center mb-4"></div>
     <DataTable v-model:editingRows="editingRows" :value="datos" editMode="row" dataKey="id"
                @row-edit-save="onRowEditSave" tableClass="editable-cells-table" tableStyle="min-width: 50rem">
-      <Column field="code" header="Code"></Column>
-      <Column field="name" header="Name">
+      <Column field="cuotaActual" header="N° Cuota"></Column>
+      <Column field="tea" header="TEA">
         <template #editor="{ data, field }">
           <InputText v-model="data[field]"/>
         </template>
       </Column>
-      <Column field="category" header="Category"></Column>
-      <Column field="inventoryStatus" header="Status" style="width: 20%">
+      <Column field="tep" header="TEP"></Column>
+      <Column field="ia" header="IA"></Column>
+      <Column field="ip" header="IP"></Column>
+      <Column field="peridoGracia" header="Periodo Gracia" style="width: 20%">
         <template #editor="{ data, field }">
           <Dropdown v-model="data[field]" :options="statuses" optionLabel="label" optionValue="value"
-                    placeholder="Select a Status">
+                    placeholder="Seleccione una opción">
             <template #option="slotProps">
               <Tag :value="slotProps.option.value" :severity="getStatusLabel(slotProps.option.value)"/>
             </template>
@@ -261,7 +263,24 @@
           <Tag :value="slotProps.data.inventoryStatus" :severity="getStatusLabel(slotProps.data.inventoryStatus)"/>
         </template>
       </Column>
-      <Column field="quantity" header="Quantity"></Column>
+      <Column field="saldoInicial" header="Saldo Inicial"></Column>
+      <Column field="saldoInicialIndexado" header="Saldo Inicial Indexado"></Column>
+      <Column field="interes" header="Interés"></Column>
+      <Column field="pagoCuota" header="Cuota"></Column>
+      <Column field="amortizacion" header="Amortización"></Column>
+      <Column field="prepago" header="Prepago">
+        <template #editor="{ data, field }">
+          <InputText v-model="data[field]"/>
+        </template>
+      </Column>
+      <Column field="seguroDesgravamen" header="Seguro Desgravamen"></Column>
+      <Column field="seguroRiesgo" header="Seguro Riesgo"></Column>
+      <Column field="comision" header="Comisión"></Column>
+      <Column field="portes" header="Portes"></Column>
+      <Column field="gastosAdministrativos" header="Gastos Administrativos"></Column>
+      <Column field="saldoFinal" header="Saldo Final"></Column>
+      <Column field="flujo" header="Flujo"></Column>
+
       <Column :rowEditor="true" style="width: 10%; min-width: 8rem" bodyStyle="text-align:center"></Column>
     </DataTable>
 
@@ -361,9 +380,9 @@ const datos = ref();
 
 const editingRows = ref([]);
 const statuses = ref([
-  {label: 'In Stock', value: 'INSTOCK'},
-  {label: 'Low Stock', value: 'LOWSTOCK'},
-  {label: 'Out of Stock', value: 'OUTOFSTOCK'}
+  {label: 'Total', value: 'TOTAL'},
+  {label: 'Parcial', value: 'PARCIAL'},
+  {label: 'Sin plazo de gracia', value: 'NOPLAZODEGRACIA'}
 ]);
 const onRowEditSave = (event) => {
   let {newData, index} = event;
@@ -372,13 +391,13 @@ const onRowEditSave = (event) => {
 };
 const getStatusLabel = (status) => {
   switch (status) {
-    case 'INSTOCK':
+    case 'TOTAL':
       return 'success';
 
-    case 'LOWSTOCK':
+    case 'PARCIAL':
       return 'warning';
 
-    case 'OUTOFSTOCK':
+    case 'NOPLAZODEGRACIA':
       return 'danger';
 
     default:
@@ -438,7 +457,7 @@ const portesGastosAdministracion = ref();
 // Resultado de indicadores de Rentabilidad
 var tasaDeDescuento = 0;
 const tirDeLaOperacion = ref();
-var tceaDeLaOperacion = ref();
+var tceaDeLaOperacion = 0;
 const vanDeLaOperacion = ref();
 
 // Datos modificables pertenecientes a la tabla ya generada
@@ -474,6 +493,7 @@ const calcularOnBu = () => {
   calcularArrayTeas();
   calcularArrayNumeroCuotas();
   tea.value = porcentajeTea.value / 100;
+  tceaDeLaOperacion = Math.pow((1 + tirDeLaOperacion), (diasPorAnio / frec)) - 1;
   var miFila = new Fila(1, nTotalDeCuotas, montoDelPrestamo, tea.value, frec.value, diasPorAnio.value, cuotaInicial.value, precioVenta.value, porcentajeSeguroDesgravamen.value, segRiesgoPer, comisionPeriodica.value, portes.value, gastosAdministracion.value, 0);
   console.log(miFila.fTEP(), miFila.fIA(), miFila.fIP(), miFila.fPG(), miFila.fSaldoInicial(), miFila.fSaldoInicialIndexado(), miFila.fInteres(), miFila.fCuota(), miFila.fAmortizacion(), miFila.fPP(), miFila.fSeguroDeDesgravamen(), miFila.fSeguroRiesgo(), miFila.fComision(), miFila.fPortes(), miFila.fGastosAdministracion(), miFila.fSaldoFinal(), miFila.fFlujo());
 }

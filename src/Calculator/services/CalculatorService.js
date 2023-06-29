@@ -2,16 +2,27 @@ export const CalculatorService = {
     getTotalData() {
         return [
             {
-                id: '1000',
-                code: 'f230fh0g3',
-                name: 'Bamboo Watch',
-                description: 'Product Description',
-                image: 'bamboo-watch.jpg',
-                price: 65,
-                category: 'Accessories',
-                quantity: 24,
-                inventoryStatus: 'INSTOCK',
-                rating: 5
+                cuotaActual: '1000',
+                tea: 'f230fh0g3',
+                tep: 'Bamboo Watch',
+                ia: 'Product Description',
+                ip: 'bamboo-watch.jpg',
+                periodoGracia: 'T',
+                saldoInicial: 26,
+                saldoInicialIndexado: 24,
+                inventoryStatus: '',
+                interes: 5,
+                pagoCuota: 655,
+                amortizacion: 412,
+                prepago: 312,
+                seguroDesgravamen: 23,
+                SeguroDesgravamen: 23,
+                seguroRiesgo: 234,
+                comision: 56,
+                portes: 23,
+                gastosAdministrativos: 213,
+                saldoFinal: 45,
+                flujo: 236
             },
             {
                 id: '1001',
