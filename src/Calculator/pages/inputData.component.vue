@@ -393,10 +393,6 @@ const calcularOnBu = () => {
   segRiesgoPer = (porcentajeSeguroRiesgo.value / 100) * precioVenta.value / nCuotasPorAnio;
   tasaDeDescuento = ((Math.pow((1 + (cok.value / 100)), (frec.value / diasPorAnio.value)) - 1) * 100).toFixed(5);
   TEPn = calcularTEP(cuotaActual, nTotalDeCuotas, tea.value, frec.value, diasPorAnio.value)
-  //cuotaPagar.value =
-  //PAGO(0.94888, 0.050, 180, 61, 83092.89);
-  //PAGO(tep2.value, pSegDesPer.value, n.value, nc.value, sii.value);
-  //calcularTEP(parseFloat(cuotaActual.value), parseFloat(tea.value));
   calcularArrayTeas();
   calcularArrayNumeroCuotas();
   tea.value = porcentajeTea.value / 100;
@@ -600,7 +596,7 @@ console.log("TIR:", tirResultado);
 .card {
   background: beige;
   border-radius: 10px;
-  margin: auto;
+  margin-left: 10px;
   margin-bottom: 1rem;
   font-family: sans-serif;
 }
