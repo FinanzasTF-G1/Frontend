@@ -340,7 +340,7 @@ import {CalculatorService} from "@/Calculator/services/CalculatorService";
 import {
   calcularArrayNumeroCuotas, calcularArrayTeas, calcularTEP, saldoInicial, saldoInicialIndexado,
   fIntereses, seguroDeDesgravamen, seguroRiesgo, comision, calcularPortes, calcularVAR, PAGO, Cuota,
-  calcularTIR, calcularIP, calcularGastosAdministracion
+  calcularTIR, calcularIP, calcularGastosAdministracion, Fila
 } from "@/Calculator/services/formulas";
 
 onMounted(() => {
@@ -474,6 +474,8 @@ const calcularOnBu = () => {
   calcularArrayTeas();
   calcularArrayNumeroCuotas();
   tea.value = porcentajeTea.value / 100;
+  var miFila = new Fila(1, nTotalDeCuotas, montoDelPrestamo, tea.value, frec.value, diasPorAnio.value, cuotaInicial.value, precioVenta.value, porcentajeSeguroDesgravamen.value, segRiesgoPer, comisionPeriodica.value, portes.value, gastosAdministracion.value, 0);
+  console.log(miFila.fTEP(), miFila.fIA(), miFila.fIP(), miFila.fPG(), miFila.fSaldoInicial(), miFila.fSaldoInicialIndexado(), miFila.fInteres(), miFila.fCuota(), miFila.fAmortizacion(), miFila.fPP(), miFila.fSeguroDeDesgravamen(), miFila.fSeguroRiesgo(), miFila.fComision(), miFila.fPortes(), miFila.fGastosAdministracion(), miFila.fSaldoFinal(), miFila.fFlujo());
 }
 /*
 

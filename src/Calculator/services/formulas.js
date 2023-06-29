@@ -93,7 +93,7 @@ function calcularGastosAdministracion(cuotaActual, nTotalDeCuotas, gastosAdminis
 
 function PAGO(tep, pSegDesPer, n, nc, sii) {
 
-    console.log(tep, pSegDesPer, n, nc, sii)
+
     var tasa = parseFloat(tep) + parseFloat(pSegDesPer);
     var nper = parseFloat(n) - parseFloat(nc) + 1;
     var va = parseFloat(sii);
@@ -116,6 +116,17 @@ function Cuota(cuotaActual, nTotalDeCuotas, tep, pSegDesPer, periodoGracia, Vsal
         } else if (periodoGracia === 'S') {
             return PAGO(tep, pSegDesPer, nTotalDeCuotas, cuotaActual, VsaldoInincialIndexado);
         }
+    }
+}
+function calcularAmortizacion(cuotaActual, nTotalDeCuotas, periodoGracia, pagoCuota, interes, seguroDesgravamen) {
+    if (cuotaActual <= nTotalDeCuotas) {
+        if (periodoGracia === 'T' || periodoGracia === 'P') {
+            return 0;
+        } else {
+            return pagoCuota - interes - seguroDesgravamen;
+        }
+    } else {
+        return 0;
     }
 }
 
@@ -148,13 +159,26 @@ function calcularTIR(flujosEfectivo) {
 }
 
 class Fila {
-    constructor(cuotaActual, nTotalDeCuotas, TEA, frec, diasPorAnio) {
+    constructor(cuotaActual, nTotalDeCuotas, montoDelPrestamo, TEA, frec, diasPorAnio, cuotaInicial, precioVenta, porcentajeSeguroDesgravamen, segRiesgoPer, comisionPeriodica, portes, gastosAdministracion, prepago) {
         this.cuotaActual = cuotaActual;
         this.nTotalDeCuotas = nTotalDeCuotas;
+        this.montoDelPrestamo = montoDelPrestamo;
         this.TEA = TEA;
         this.frec = frec;
         this.diasPorAnio = diasPorAnio;
         this.IA=0.0;
+        this.PG = 'S';
+        this.saldoFinal =0;
+        this.cuotaInicial = cuotaInicial;
+        this.precioVenta = precioVenta;
+        this.porcentajeSeguroDesgravamen=porcentajeSeguroDesgravamen;
+        this.segDesgravamenPer = (porcentajeSeguroDesgravamen / 30) * frec;
+        this.PP = 0;
+        this.segRiesgoPer = segRiesgoPer;
+        this.comisionPeriodica=comisionPeriodica;
+        this.portes=portes;
+        this.gastosAdministracion=gastosAdministracion;
+        this.prepago = prepago;
     }
 
     fTEP() {
@@ -180,10 +204,118 @@ class Fila {
             return 0;
         }
     }
+    fPG(){
+        return this.PG;
+    }
+    setPS(s){
+        this.PG = s;
+    }
+    calcSaldoAFinanciar(){
+        this.saldoFinal = this.precioVenta - (this.cuotaInicial / 100) * this.precioVenta;
+        return this.saldoFinal;
+    }
+    getSaldoFinal(){
+        return this.saldoFinal;
+    }
+    //a revisar
+    fSaldoInicial() {
+        if (this.cuotaActual === 1) {
+            return this.montoDelPrestamo;
+        } else if (this.cuotaActual <= this.nTotalDeCuotas) {
+            return this.cuotaInicial;
+        } else {
+            return 0;
+        }
+    }
+    fSaldoInicialIndexado() {
+        return this.fSaldoInicial() + (this.fSaldoInicial() * this.fIP())
+    }
+    fInteres() {
+        return -((this.fSaldoInicialIndexado() * this.fTEP()) / 100);
+    }
+    fCuota() {
+        if (this.cuotaActual <= this.nTotalDeCuotas) {
+
+            if (this.PG === 'T') {
+                return 0;
+            } else if (this.PG === 'P') {
+                return this.fInteres();
+            } else if (this.PG === 'S') {
+                return PAGO(this.fTEP(), this.segDesgravamenPer, this.nTotalDeCuotas, this.cuotaActual, this.fSaldoInicialIndexado());
+            }
+        }
+    }
+
+    fAmortizacion() {
+        if (this.cuotaActual <= this.nTotalDeCuotas) {
+            if (this.PG === 'T' || this.PG === 'P') {
+                return 0;
+            } else {
+                return -(this.fCuota()- this.fInteres() - this.fSeguroDeDesgravamen());
+            }
+        } else {
+            return 0;
+        }
+    }
+    fPP(){
+        return this.PP;
+    }
+    setPP(p){
+        this.PP= p ;
+    }
+    fSeguroDeDesgravamen() {
+        return -((this.fSaldoInicialIndexado() * this.porcentajeSeguroDesgravamen) / 100);
+    }
+    fSeguroRiesgo() {
+        if (this.cuotaActual <= this.nTotalDeCuotas) {
+            return -(this.segRiesgoPer);
+        } else {
+            return 0;
+        }
+    }
+    fComision() {
+        if (this.cuotaActual <= this.nTotalDeCuotas) {
+            return -(this.comisionPeriodica);
+        } else {
+            return 0;
+        }
+    }
+    fPortes() {
+        if (this.cuotaActual <= this.nTotalDeCuotas) {
+            return -(this.portes);
+        } else {
+            return 0;
+        }
+    }
+    fGastosAdministracion() {
+        if (this.cuotaActual <= this.nTotalDeCuotas) {
+            return -(this.gastosAdministracion);
+        } else {
+            return 0;
+        }
+    }
+    fSaldoFinal() {
+        if (this.PG === 'T') {
+            return this.fSaldoInicialIndexado() - this.fInteres();
+        } else {
+            return this.fSaldoInicialIndexado() + this.fAmortizacion() + this.prepago;
+        }
+    }
+
+    fFlujo() {
+        let flujo = this.fCuota() + this.prepago + this.fSeguroRiesgo() + this.fComision() + this.fPortes() + this.fGastosAdministracion();
+
+        if (this.PG === "T" || this.PG === "P") {
+            flujo += this.fSeguroDeDesgravamen();
+        }
+
+        return flujo;
+    }
+
 
 }
 
-const miFila_1 = new fila(1);
+//const miFila_1 = new Fila(1);
 
 
 /*
@@ -203,5 +335,5 @@ function Cuota(cuotaActual, nTotalDeCuotas, periodoGracia) {
 export {
     calcularArrayNumeroCuotas, calcularArrayTeas, calcularTEP, saldoInicial, saldoInicialIndexado,
     fIntereses, seguroDeDesgravamen, seguroRiesgo, comision, calcularPortes, calcularVAR, PAGO, Cuota,
-    calcularTIR, calcularIP, calcularGastosAdministracion
+    calcularTIR, calcularIP, calcularGastosAdministracion, Fila
 }
