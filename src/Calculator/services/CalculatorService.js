@@ -75,7 +75,7 @@ export const CalculatorService = {
 
         if (productIndex !== -1) {
             // Found the product with the specified ID
-            updatedProduct = { ...productsData[productIndex], ...newData };
+            updatedProduct = {...productsData[productIndex], ...newData};
             productsData[productIndex] = updatedProduct;
         }
 
@@ -89,7 +89,7 @@ export const CalculatorService = {
 
             if (productIndex !== -1) {
                 // Found the product with the specified ID
-                const updatedProduct = { ...productsData[productIndex], ...newData };
+                const updatedProduct = {...productsData[productIndex], ...newData};
                 productsData[productIndex] = updatedProduct;
                 resolve(productsData);
             } else {

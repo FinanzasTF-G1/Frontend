@@ -3,11 +3,11 @@
 
 <template>
 
-    <RouterView />
+  <RouterView/>
 </template>
 
 <style>
-html{
-    background-color: #443988;
+html {
+  background-color: #443988;
 }
 </style>

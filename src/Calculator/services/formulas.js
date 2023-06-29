@@ -14,7 +14,7 @@ function calcularArrayTeas(nTotalDeCuotas, tea) {
     return arrayTEAs
 }
 
-function calcularTEP(cuotaActual,nTotalDeCuotas,tea, frec, diasPorAnio) {
+function calcularTEP(cuotaActual, nTotalDeCuotas, tea, frec, diasPorAnio) {
     if (cuotaActual <= (nTotalDeCuotas)) {
         return (
             (Math.pow(1 + (tea), (frec) / (diasPorAnio)) - 1) * 100
@@ -24,7 +24,7 @@ function calcularTEP(cuotaActual,nTotalDeCuotas,tea, frec, diasPorAnio) {
     }
 }
 
-function calcularIP (cuotaActual, nTotalDeCuotas, frec, diasPorAnio, ia) {
+function calcularIP(cuotaActual, nTotalDeCuotas, frec, diasPorAnio, ia) {
     if ((cuotaActual) <= (nTotalDeCuotas)) {
         return (
             ((Math.pow(1 + ia, (frec) / (diasPorAnio)) - 1) * 100)
@@ -33,6 +33,7 @@ function calcularIP (cuotaActual, nTotalDeCuotas, frec, diasPorAnio, ia) {
         return 0;
     }
 }
+
 //en desarrollo
 function saldoInicial(cuotaActual, montoDelPrestamo, nTotalDeCuotas, cuotas) {
     if (cuotaActual === 1) {
@@ -50,7 +51,7 @@ function saldoInicialIndexado(cuotaActual, inflacionPeriodo, montoDelPrestamo, n
 }
 
 function fIntereses(VsaldoInincialIndexado, V_TEP) {
-    const  n = (VsaldoInincialIndexado * V_TEP)/100;
+    const n = (VsaldoInincialIndexado * V_TEP) / 100;
     return n
 }
 
@@ -58,31 +59,31 @@ function seguroDeDesgravamen(vSaldoInicialIndexado, porcentajeSeguroDesgravamen)
     return (vSaldoInicialIndexado * porcentajeSeguroDesgravamen) / 100;
 }
 
-function seguroRiesgo (cuotaActual, nTotalDeCuotas, segRiesgoPer) {
+function seguroRiesgo(cuotaActual, nTotalDeCuotas, segRiesgoPer) {
     if (cuotaActual <= nTotalDeCuotas) {
-        return - segRiesgoPer;
+        return -segRiesgoPer;
     } else {
         return 0;
     }
 }
 
-function comision (cuotaActual, nTotalDeCuotas, comisionPeriodica) {
+function comision(cuotaActual, nTotalDeCuotas, comisionPeriodica) {
     if (cuotaActual <= nTotalDeCuotas) {
-        return - comisionPeriodica;
+        return -comisionPeriodica;
     } else {
         return 0;
     }
 }
 
-function calcularPortes (cuotaActual, nTotalDeCuotas, portes) {
+function calcularPortes(cuotaActual, nTotalDeCuotas, portes) {
     if (cuotaActual <= nTotalDeCuotas) {
-        return - portes;
+        return -portes;
     } else {
         return 0;
     }
 }
 
-function calcularGastosAdministracion (cuotaActual, nTotalDeCuotas, gastosAdministracion) {
+function calcularGastosAdministracion(cuotaActual, nTotalDeCuotas, gastosAdministracion) {
     if (cuotaActual <= nTotalDeCuotas) {
         return -gastosAdministracion;
     } else {
@@ -90,7 +91,7 @@ function calcularGastosAdministracion (cuotaActual, nTotalDeCuotas, gastosAdmini
     }
 }
 
-function PAGO (tep, pSegDesPer, n, nc, sii)  {
+function PAGO(tep, pSegDesPer, n, nc, sii) {
 
     var tasa = tep + pSegDesPer;
     var nper = n - nc + 1;
@@ -104,15 +105,15 @@ function PAGO (tep, pSegDesPer, n, nc, sii)  {
 }
 
 //para editar
-function Cuota (cuotaActual, nTotalDeCuotas, tep, pSegDesPer, periodoGracia, VsaldoInincialIndexado, V_TEP) {
+function Cuota(cuotaActual, nTotalDeCuotas, tep, pSegDesPer, periodoGracia, VsaldoInincialIndexado, V_TEP) {
     if (cuotaActual <= nTotalDeCuotas) {
 
         if (periodoGracia === 'T') {
             return 0;
         } else if (periodoGracia === 'P') {
             return fIntereses(VsaldoInincialIndexado, V_TEP);
-        } else if (periodoGracia === 'S'){
-            return PAGO(tep,pSegDesPer,nTotalDeCuotas,cuotaActual,VsaldoInincialIndexado);
+        } else if (periodoGracia === 'S') {
+            return PAGO(tep, pSegDesPer, nTotalDeCuotas, cuotaActual, VsaldoInincialIndexado);
         }
     }
 }
@@ -145,7 +146,7 @@ function calcularTIR(flujosEfectivo) {
     return tasaMedia;
 }
 
-const fila={
+const fila = {
     numeroCuota: 0,
     tea: '',
     tep: '',
@@ -166,15 +167,13 @@ const fila={
     flujo: ''
 }
 
-class fila_f{
+class fila_f {
     constructor(cuotaActual) {
-        this.cuotaActual=cuotaActual;
+        this.cuotaActual = cuotaActual;
     }
 }
 
-const instancia=new fila_f(1);
-
-
+const instancia = new fila_f(1);
 
 
 /*
@@ -191,6 +190,8 @@ function Cuota(cuotaActual, nTotalDeCuotas, periodoGracia) {
 }
 */
 
-export {calcularArrayNumeroCuotas, calcularArrayTeas, calcularTEP, saldoInicial, saldoInicialIndexado,
+export {
+    calcularArrayNumeroCuotas, calcularArrayTeas, calcularTEP, saldoInicial, saldoInicialIndexado,
     fIntereses, seguroDeDesgravamen, seguroRiesgo, comision, calcularPortes, calcularVAR, PAGO, Cuota,
-    calcularTIR, calcularIP, calcularGastosAdministracion, instancia}
+    calcularTIR, calcularIP, calcularGastosAdministracion, instancia
+}
